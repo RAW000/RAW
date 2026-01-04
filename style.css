@@ -1,0 +1,109 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  background: #0d0d0d; /* ВЕРНУЛ ЧЕРНЫЙ ФОН */
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ШАПКА - ТВОЙ БЕЛЫЙ БАННЕР */
+.header {
+  width: 100%;
+  height: 160px;
+  background-color: #ffffff; /* БЕЛЫЙ ФОН ШАПКИ */
+  background-image: url("raw.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-bottom: 80px;
+  border: none;
+}
+
+/* БОКОВЫЕ ПОЛОСЫ - ТЕПЕРЬ ОНИ БЕЛЫЕ И СЛИВАЮТСЯ С БАННЕРОМ */
+.side {
+  position: fixed;
+  top: 0;
+  width: 28px;
+  height: 100vh;
+  background: #ffffff; /* ПОКРАСИЛ В БЕЛЫЙ */
+  z-index: 100;
+}
+.left { left: 0; }
+.right { right: 0; }
+
+/* Контент */
+.content {
+  padding: 0 100px 60px 100px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 50px;
+}
+
+/* КАРТОЧКИ (ВЕРНУЛ ТВОЙ СТИЛЬ) */
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.35); /* Вернул белые бордеры карточек */
+  padding: 16px;
+  min-height: 180px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card .img {
+  width: 100%;
+  height: 250px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 12px;
+}
+
+/* Текст */
+.card h2 {
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.card p {
+  font-size: 11px;
+  opacity: 0.5;
+  color: #fff;
+}
+
+/* Футер */
+footer {
+  margin-top: 120px;
+  display: flex;
+  gap: 30px;
+  font-size: 12px;
+  padding-bottom: 40px;
+}
+
+footer a {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.6;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+  .header { height: 200px; }
+  .grid { grid-template-columns: 1fr; }
+  .side { width: 15px; }
+}
