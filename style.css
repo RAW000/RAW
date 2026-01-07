@@ -95,10 +95,14 @@ body {
 
 .card .img {
   width: 100%;
-  height: 250px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  aspect-ratio: 3 / 4;   /* форма карточки */
+  object-fit: cover;    /* заполняет без пустот */
+  display: block;
+  border: 1px solid rgba(255,255,255,0.3);
   margin-bottom: 12px;
 }
+
+
 
 /* Текст */
 .card h2 {
@@ -129,9 +133,57 @@ footer a {
   opacity: 0.6;
 }
 
-/* Адаптив */
 @media (max-width: 768px) {
   .header { height: 200px; }
-  .grid { grid-template-columns: 1fr; }
+  .grid {
+    grid-template-columns: repeat(2, 1fr); /* было 1fr */
+    gap: 20px;
+  }
   .side { width: 15px; }
+}
+
+/* ===== FIX FINAL ===== */
+
+/* КАРТОЧКИ НА ПК — МЕНЬШЕ И С ВОЗДУХОМ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 420px));
+  gap: 50px;
+  justify-content: center;
+}
+
+/* ФОТО — РОВНЫЕ, БЕЗ ПУСТОТ */
+.card .img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  border: 1px solid rgba(255,255,255,0.3);
+  margin-bottom: 12px;
+}
+
+/* ФУТЕР — ССЫЛКИ НЕ РЕЖУТСЯ */
+footer {
+  flex-wrap: wrap;
+  row-gap: 15px;
+}
+
+footer a {
+  white-space: nowrap;
+}
+
+/* МОБИЛЬНЫЕ + iPHONE FIX */
+@media (max-width: 768px) {
+  .content {
+    padding: 0 20px 60px 20px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .side {
+    width: 10px;
+  }
 }
