@@ -1,8 +1,50 @@
 [
-  { "name": "Rick owens Mountain Zip Up", "desc": "Price:17620тг. Size:M. Quality new. Material:cotton, fleece.", "image": "https://vintendoarchive.com/cdn/shop/files/IMG_4756.heic?v=1700236578&width=1445" },
-  { "name": "ERD melanholic s22 longsleave", "desc": "Price:14900тг. Size:M. Quality new. Material: full cotton.", "image": "https://i.redd.it/is-this-erd-longsleeve-legit-v0-7dazxb55070f1.jpg?width=1170&format=pjpg&auto=webp&s=99c6374a93ca0b0eb51e2c0b918f8dc41644a365" },
-  { "name": "Chrome hearts transparent glasses", "desc": "Price:3200тг. Size: OneZise. Quality full new", "image": "https://ir.ozone.ru/s3/multimedia-2/6901326614.jpg" },
-  { "name": "Chrome hearts glases ", "desc": "Price:3990тг. Size: OneSize. Quality full new, with box and complete assembly ", "image": "https://ireland.apollo.olxcdn.com/v1/files/o4nmc1lld5bc3-UA/image;s=1000x969" },
-  { "name": "ERD backpack realtree", "desc": "Price:6500тг. Size: OneSize. Quality full new", "image": "https://media-assets.grailed.com/prd/listing/temp/13b34b5cb728420f8f5961482d0cb90b" },
-  { "name": "Yeezy x ГОША РУБЧИНСКИЙ T-shirt", "desc": "Price:5990тг. Size:L. Quality full new. Material:cotton", "image": "https://cdn.poizon.com/pro-img/origin-img/2025031915/e85d2370fce24efec8b4f4b70c678516.jpg" }
+  { 
+    "name": "Rick owens Mountain Zip Up",
+    "desc": "Price:18000тг. Size: M. Quality new. Material:cotton, fleece.",
+    "image": "https://vintendoarchive.com/cdn/shop/files/IMG_4756.heic?v=1700236578&width=1445",
+    "tgPost": "https://t.me/RAWSTORE111/41" 
+  },
+  { 
+    "name": "ERD melanholic s22 longsleave", 
+    "desc": "Price:14900тг. Size: M. Quality new. Material: full cotton.", 
+    "image": "https://i.redd.it/is-this-erd-longsleeve-legit-v0-7dazxb55070f1.jpg?width=1170&format=pjpg&auto=webp&s=99c6374a93ca0b0eb51e2c0b918f8dc41644a365",
+    "tgPost": "https://t.me/RAWSTORE111/66"
+  },
+  { 
+    "name": "Chrome hearts transparent glasses", 
+    "desc": "Price:3260тг. Size: OneZise. Quality full new", 
+    "image": "https://ir.ozone.ru/s3/multimedia-2/6901326614.jpg",
+    "tgPost": "https://t.me/RAWSTORE111/56"
+  },
+  { 
+    "name": "Chrome hearts glases", 
+    "desc": "Price:3410тг. Size: OneSize. Quality full new", 
+    "image": "https://ireland.apollo.olxcdn.com/v1/files/o4nmc1lld5bc3-UA/image;s=1000x969",
+    "tgPost": "https://t.me/RAWSTORE111/59"
+  },
+  { 
+    "name": "ERD backpack realtree", 
+    "desc": "Price:6990тг. Size: OneSize. Quality full new", 
+    "image": "https://media-assets.grailed.com/prd/listing/temp/13b34b5cb728420f8f5961482d0cb90b",
+    "tgPost": "https://t.me/RAWSTORE111/53"
+  },
+  { 
+    "name": "Yeezy x ГОША РУБЧИНСКИЙ T-shirt", 
+    "desc": "Price:5990тг. Size: L. Quality full new.", 
+    "image": "https://cdn.poizon.com/pro-img/origin-img/2025031915/e85d2370fce24efec8b4f4b70c678516.jpg",
+    "tgPost": "https://t.me/RAWSTORE111/39"
+  },
+  { 
+    "name": "EVISU Osaka archive jeans, early 2000s", 
+    "desc": "Price:30000тг. LEGIT .Size: M. Condition 8/10, Full cotton", 
+    "image": "https://i.ibb.co.com/B29Yrp8T/evisu.jpg",
+    "tgPost": "https://t.me/RAWSTORE111/45?single"
+  },
+  { 
+    "name": "Adidas Climawarm zip archive 2014", 
+    "desc": "Price:10000тг. LEGIT. Size: M. Condition 8/10, Cotton with fleece ", 
+    "image": "https://i.ibb.co.com/CpDTS9ZB/adidas.jpg",
+    "tgPost": "https://t.me/RAWSTORE111/51"
+  }
 ]

@@ -142,6 +142,32 @@ footer a {
   .side { width: 15px; }
 }
 
+/* Контейнер для иконки внутри карточки */
+.tg-icon-link {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    border: 1px solid #000;
+}
+
+.tg-icon-link:hover {
+    transform: scale(1.1);
+    background: #fff;
+}
+
+.tg-icon-link img {
+    width: 20px;
+    height: 20px;
+}
+
 /* ===== FIX FINAL ===== */
 
 /* КАРТОЧКИ НА ПК — МЕНЬШЕ И С ВОЗДУХОМ */
