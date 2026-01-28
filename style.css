@@ -6,17 +6,17 @@
 
 body {
   width: 100%;
-  background: #0d0d0d; /* ВЕРНУЛ ЧЕРНЫЙ ФОН */
+  background: #0d0d0d;
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
 
-/* ШАПКА - ТВОЙ БЕЛЫЙ БАННЕР */
+/* ШАПКА */
 .header {
   width: 100%;
   height: 160px;
-  background-color: #ffffff; /* БЕЛЫЙ ФОН ШАПКИ */
+  background-color: #ffffff;
   background-image: url("raw(1).jpg");
   background-repeat: no-repeat;
   background-position: center;
@@ -25,20 +25,20 @@ body {
   border: none;
 }
 
-
 .after-header-text,
 .bottom-text {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 400;
   letter-spacing: 0.6px;
 } 
+
 .after-header-text {
   width: 100%;
   text-align: center;
   padding: 20px 0;
   font-size: 16px;
   color: #fff;
-  background: #0d0d0d; /* фон страницы, чтобы слить с контентом */
+  background: #0d0d0d;
   opacity: 0.9;
 }
 
@@ -51,19 +51,49 @@ body {
   opacity: 0.7;
 }
 
-
-
-/* БОКОВЫЕ ПОЛОСЫ - ТЕПЕРЬ ОНИ БЕЛЫЕ И СЛИВАЮТСЯ С БАННЕРОМ */
+/* БОКОВЫЕ ПОЛОСЫ */
 .side {
   position: fixed;
   top: 0;
   width: 28px;
   height: 100vh;
-  background: #ffffff; /* ПОКРАСИЛ В БЕЛЫЙ */
+  background: #ffffff;
   z-index: 100;
 }
 .left { left: 0; }
 .right { right: 0; }
+
+/* ФИЛЬТРЫ */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 40px 0;
+  flex-wrap: wrap;
+  padding: 0 20px;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 8px 20px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.filter-btn:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.filter-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.8);
+}
 
 /* Контент */
 .content {
@@ -74,18 +104,26 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(260px, 420px));
   gap: 50px;
+  justify-content: center;
 }
 
-/* КАРТОЧКИ (ВЕРНУЛ ТВОЙ СТИЛЬ) */
+/* КАРТОЧКИ */
 .card {
-  border: 1px solid rgba(255, 255, 255, 0.35); /* Вернул белые бордеры карточек */
+  border: 1px solid rgba(255, 255, 255, 0.35);
   padding: 16px;
   min-height: 180px;
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.8s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-5px);
 }
 
 .card.show {
@@ -95,16 +133,43 @@ body {
 
 .card .img {
   width: 100%;
-  aspect-ratio: 3 / 4;   /* форма карточки */
-  object-fit: cover;    /* заполняет без пустот */
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
   display: block;
   border: 1px solid rgba(255,255,255,0.3);
   margin-bottom: 12px;
 }
 
+/* SOLD OUT стикер */
+.sold-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 0, 0, 0.9);
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-family: 'Space Grotesk', sans-serif;
+  z-index: 10;
+}
 
+/* Счетчик просмотров */
+.views-badge {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  font-family: 'Space Grotesk', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
-/* Текст */
+/* Текст карточек */
 .card h2 {
   font-size: 13px;
   font-weight: 300;
@@ -118,6 +183,144 @@ body {
   color: #fff;
 }
 
+/* МОДАЛЬНОЕ ОКНО */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.modal-content {
+  position: relative;
+  background: #1a1a1a;
+  max-width: 900px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1001;
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 1002;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 40px;
+}
+
+.modal-image-container {
+  position: relative;
+}
+
+.modal-image-container img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-views {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  font-family: 'Space Grotesk', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-info h2 {
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.modal-info p {
+  font-size: 14px;
+  line-height: 1.8;
+  opacity: 0.8;
+  margin-bottom: 30px;
+  white-space: pre-line;
+}
+
+.modal-tg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 15px 30px;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  font-family: 'Space Grotesk', sans-serif;
+  margin-top: auto;
+}
+
+.modal-tg-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-tg-btn img {
+  width: 20px;
+  height: 20px;
+}
+
 /* Футер */
 footer {
   margin-top: 120px;
@@ -125,91 +328,78 @@ footer {
   gap: 30px;
   font-size: 12px;
   padding-bottom: 40px;
+  flex-wrap: wrap;
+  row-gap: 15px;
 }
 
 footer a {
   color: #fff;
   text-decoration: none;
   opacity: 0.6;
-}
-
-@media (max-width: 768px) {
-  .header { height: 200px; }
-  .grid {
-    grid-template-columns: repeat(2, 1fr); /* было 1fr */
-    gap: 20px;
-  }
-  .side { width: 15px; }
-}
-
-/* Контейнер для иконки внутри карточки */
-.tg-icon-link {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    width: 35px;
-    height: 35px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.3s;
-    border: 1px solid #000;
-}
-
-.tg-icon-link:hover {
-    transform: scale(1.1);
-    background: #fff;
-}
-
-.tg-icon-link img {
-    width: 20px;
-    height: 20px;
-}
-
-/* ===== FIX FINAL ===== */
-
-/* КАРТОЧКИ НА ПК — МЕНЬШЕ И С ВОЗДУХОМ */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(260px, 420px));
-  gap: 50px;
-  justify-content: center;
-}
-
-/* ФОТО — РОВНЫЕ, БЕЗ ПУСТОТ */
-.card .img {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  display: block;
-  border: 1px solid rgba(255,255,255,0.3);
-  margin-bottom: 12px;
-}
-
-/* ФУТЕР — ССЫЛКИ НЕ РЕЖУТСЯ */
-footer {
-  flex-wrap: wrap;
-  row-gap: 15px;
-}
-
-footer a {
   white-space: nowrap;
 }
 
-/* МОБИЛЬНЫЕ + iPHONE FIX */
+/* АДАПТИВ */
 @media (max-width: 768px) {
+  .header { 
+    height: 120px;
+    margin-bottom: 40px;
+  }
+  
+  .filters {
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .filter-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+  
   .content {
     padding: 0 20px 60px 20px;
   }
-
+  
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
-
+  
   .side {
     width: 10px;
+  }
+  
+  .sold-badge {
+    font-size: 8px;
+    padding: 4px 10px;
+    top: 10px;
+    left: 10px;
+  }
+  
+  .views-badge {
+    font-size: 8px;
+    padding: 3px 8px;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  /* Модалка на мобилке */
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .modal-body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 60px 20px 20px 20px;
+  }
+  
+  .modal-close {
+    top: 10px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
   }
 }

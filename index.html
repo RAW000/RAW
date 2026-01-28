@@ -16,24 +16,54 @@
 <header class="header"></header>
 
 <div class="after-header-text">
-    <h3>FIRST DROP<h3>
-        <p>for buy text me dm</p>
+    <h3>FIRST DROP</h3>
+    <p>сlick on the product card to purchase</p>
+</div>
+
+<!-- ФИЛЬТРЫ -->
+<div class="filters">
+    <button class="filter-btn active" data-filter="all">ALL</button>
+    <button class="filter-btn" data-filter="clothing">CLOTHING</button>
+    <button class="filter-btn" data-filter="accessories">ACCESSORIES</button>
+    <button class="filter-btn" data-filter="price-low">PRICE: LOW</button>
+    <button class="filter-btn" data-filter="price-high">PRICE: HIGH</button>
 </div>
 
 <main class="content">
   <section class="grid" id="products"></section>
-    <div class="bottom-text">
+  
+  <div class="bottom-text">
     <p>FOR THE REAL PHOTO CHECK MY TGC</p>
   </div>
+  
   <footer>
     <a href="https://t.me/RAWSTORE111" target="_blank">tgc:RAWSTORE111</a>
     <a href="https://t.me/rawceo111" target="_blank">tg:RAWCEO111</a>
     <a href="https://www.instagram.com/raw_store111/" target="_blank">inst:RAW_STORE111</a>
   </footer>
-
 </main>
 
-
+<!-- МОДАЛЬНОЕ ОКНО -->
+<div class="modal" id="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <div class="modal-body">
+            <div class="modal-image-container">
+                <img id="modal-image" src="" alt="">
+                <div class="modal-views" id="modal-views"></div>
+            </div>
+            <div class="modal-info">
+                <h2 id="modal-name"></h2>
+                <p id="modal-desc"></p>
+                <a id="modal-tg-link" href="" target="_blank" class="modal-tg-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="TG">
+                    VIEW IN TELEGRAM
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="script.js"></script>
 </body>
