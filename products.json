@@ -1,11 +1,11 @@
 [
   {
     "name": "Rick owens Mountain Zip Up",
-    "desc": "Price: 18000тг.\nSize: M.\nQuality: new.\nMaterial: cotton, fleece.",
+    "desc": "Price: 15000тг.\nSize: M.\nQuality: new.\nMaterial: cotton, fleece.",
     "image": "https://vintendoarchive.com/cdn/shop/files/IMG_4756.heic?v=1700236578&width=1445",
     "tgPost": "https://t.me/RAWSTORE111/41",
     "category": "clothing",
-    "price": 18000,
+    "price": 15000,
     "sold": false,
     "views": 35
   },
@@ -41,11 +41,11 @@
   },
   {
     "name": "ERD backpack realtree",
-    "desc": "Price: 6990тг.\nSize: OneSize.\nQuality: full new.",
+    "desc": "Saled.",
     "image": "https://media-assets.grailed.com/prd/listing/temp/13b34b5cb728420f8f5961482d0cb90b",
     "tgPost": "https://t.me/RAWSTORE111/53",
     "category": "accessories",
-    "price": 6990,
+    "price": null,
     "sold": true,
     "views": 39
   },
@@ -61,21 +61,21 @@
   },
   {
     "name": "EVISU Osaka archive jeans, early 2000s",
-    "desc": "Price: 18000тг.\nLEGIT.\nSize: M.\nCondition: 8/10.\nFull cotton.",
+    "desc": "Price: 9900тг.\nLEGIT.\nSize: M.\nCondition: 8/10.\nFull cotton.",
     "image": "evisu.jpg",
     "tgPost": "https://t.me/RAWSTORE111/45?single",
     "category": "clothing",
-    "price": 18000,
+    "price": 9900,
     "sold": false,
     "views": 38
   },
   {
     "name": "Adidas Climawarm zip archive 2014",
-    "desc": "Price: 10000тг.\nLEGIT.\nSize: M.\nCondition: 8/10.\nCotton with fleece.",
+    "desc": "Price: 7000тг.\nLEGIT.\nSize: M.\nCondition: 8/10.\nCotton with fleece.",
     "image": "adidas.jpg",
     "tgPost": "https://t.me/RAWSTORE111/51",
     "category": "clothing",
-    "price": 10000,
+    "price": 7000,
     "sold": false,
     "views": 42
   }
