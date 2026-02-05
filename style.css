@@ -12,12 +12,12 @@ body {
   overflow-x: hidden;
 }
 
-/* ШАПКА */
+/* HEADER */
 .header {
   width: 100%;
   height: 160px;
   background-color: #ffffff;
-  background-image: url("raw(1).jpg");
+  background-image: url("raw.jpg");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -51,7 +51,7 @@ body {
   opacity: 0.7;
 }
 
-/* БОКОВЫЕ ПОЛОСЫ */
+/* SIDE PANELS */
 .side {
   position: fixed;
   top: 0;
@@ -63,7 +63,7 @@ body {
 .left { left: 0; }
 .right { right: 0; }
 
-/* ФИЛЬТРЫ */
+/* FILTERS */
 .filters {
   display: flex;
   justify-content: center;
@@ -95,7 +95,7 @@ body {
   border-color: rgba(255, 255, 255, 0.8);
 }
 
-/* Контент */
+/* CONTENT */
 .content {
   padding: 0 100px 60px 100px;
   max-width: 1600px;
@@ -109,7 +109,7 @@ body {
   justify-content: center;
 }
 
-/* КАРТОЧКИ */
+/* CARDS */
 .card {
   border: 1px solid rgba(255, 255, 255, 0.35);
   padding: 16px;
@@ -140,7 +140,7 @@ body {
   margin-bottom: 12px;
 }
 
-/* SOLD OUT стикер */
+/* SOLD OUT BADGE */
 .sold-badge {
   position: absolute;
   top: 20px;
@@ -155,7 +155,7 @@ body {
   z-index: 10;
 }
 
-/* Счетчик просмотров */
+/* VIEWS COUNTER */
 .views-badge {
   position: absolute;
   bottom: 20px;
@@ -169,7 +169,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Текст карточек */
+/* CARD TEXT */
 .card h2 {
   font-size: 13px;
   font-weight: 300;
@@ -183,7 +183,7 @@ body {
   color: #fff;
 }
 
-/* МОДАЛЬНОЕ ОКНО */
+/* MODAL WINDOW */
 .modal {
   position: fixed;
   top: 0;
@@ -321,7 +321,7 @@ body {
   height: 20px;
 }
 
-/* Футер */
+/* FOOTER */
 footer {
   margin-top: 120px;
   display: flex;
@@ -339,11 +339,26 @@ footer a {
   white-space: nowrap;
 }
 
-/* АДАПТИВ */
+footer a.reviews-link {
+  opacity: 0.85;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+}
+
+footer a:hover {
+  opacity: 1;
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .header { 
     height: 120px;
     margin-bottom: 40px;
+  }
+  
+  .reviews-btn {
+    padding: 8px 20px;
+    font-size: 10px;
   }
   
   .filters {
@@ -383,7 +398,7 @@ footer a {
     right: 10px;
   }
   
-  /* Модалка на мобилке */
+  /* MODAL ON MOBILE */
   .modal-content {
     width: 95%;
     max-height: 90vh;

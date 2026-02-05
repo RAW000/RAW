@@ -1,36 +1,67 @@
 let allProducts = [];
 
+// Загружаем продукты
 fetch('products.json')
     .then(res => res.json())
     .then(items => {
         allProducts = items;
-        // Загружаем реальные счетчики для всех товаров
-        loadRealViewCounts(items);
+        // Пробуем загрузить реальные счетчики
+        loadViewCounts(items);
         setupFilters();
     })
+    .catch(error => {
+        console.error('Ошибка загрузки products.json:', error);
+    });
 
-// Загрузка реальных счетчиков просмотров
-async function loadRealViewCounts(items) {
+// Функция загрузки счетчиков с улучшенной обработкой ошибок
+async function loadViewCounts(items) {
+    console.log('Загрузка счетчиков просмотров...');
+    
     const updatedItems = await Promise.all(
         items.map(async (item, index) => {
             try {
-                // Пробуем получить существующий счетчик
-                let response = await fetch(`https://api.countapi.xyz/get/rawstore111/product-${index}`);
+                // Увеличиваем таймаут и добавляем повторные попытки
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                // Пробуем получить счетчик
+                let response = await fetch(
+                    `https://api.countapi.xyz/get/rawstore111/product-${index}`,
+                    { signal: controller.signal }
+                );
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 let data = await response.json();
                 
-                // Если счетчик не существует (status 404), создаем его
-                if (data.value === undefined) {
+                // Если счетчик не существует, создаем его
+                if (data.value === undefined || data.value === null) {
                     console.log(`Создаем счетчик для product-${index} со значением ${item.views}`);
-                    response = await fetch(`https://api.countapi.xyz/set/rawstore111/product-${index}?value=${item.views}`);
-                    data = await response.json();
+                    const createController = new AbortController();
+                    const createTimeoutId = setTimeout(() => createController.abort(), 5000);
+                    
+                    response = await fetch(
+                        `https://api.countapi.xyz/set/rawstore111/product-${index}?value=${item.views}`,
+                        { signal: createController.signal }
+                    );
+                    clearTimeout(createTimeoutId);
+                    
+                    if (response.ok) {
+                        data = await response.json();
+                    }
                 }
                 
                 // Используем значение из API
-                if (data.value !== undefined) {
+                if (data.value !== undefined && data.value !== null) {
                     item.views = data.value;
+                    console.log(`Загружен счетчик для product-${index}: ${data.value}`);
                 }
             } catch (error) {
-                console.log('CountAPI недоступен, используем статичные цифры');
+                console.log(`CountAPI недоступен для product-${index}, используем статичное значение:`, error.message);
+                // Оставляем статичное значение из JSON
             }
             return item;
         })
@@ -41,6 +72,11 @@ async function loadRealViewCounts(items) {
 
 function renderProducts(items) {
     const grid = document.getElementById('products');
+    if (!grid) {
+        console.error('Элемент #products не найден!');
+        return;
+    }
+    
     grid.innerHTML = '';
 
     items.forEach((item, index) => {
@@ -104,9 +140,17 @@ function setupFilters() {
             } else if (filter === 'accessories') {
                 filtered = allProducts.filter(p => p.category === 'accessories');
             } else if (filter === 'price-low') {
-                filtered = allProducts.sort((a, b) => a.price - b.price);
+                filtered = [...allProducts].sort((a, b) => {
+                    if (a.price === null) return 1;
+                    if (b.price === null) return -1;
+                    return a.price - b.price;
+                });
             } else if (filter === 'price-high') {
-                filtered = allProducts.sort((a, b) => b.price - a.price);
+                filtered = [...allProducts].sort((a, b) => {
+                    if (a.price === null) return 1;
+                    if (b.price === null) return -1;
+                    return b.price - a.price;
+                });
             }
             
             renderProducts(filtered);
@@ -130,23 +174,38 @@ async function openModal(item, index) {
     
     // Увеличиваем счетчик при открытии модалки
     try {
-        const response = await fetch(`https://api.countapi.xyz/hit/rawstore111/product-${index}`);
-        const data = await response.json();
-        modalViews.textContent = `${data.value} views`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        // Обновляем счетчик в массиве
-        allProducts[index].views = data.value;
+        const response = await fetch(
+            `https://api.countapi.xyz/hit/rawstore111/product-${index}`,
+            { signal: controller.signal }
+        );
+        clearTimeout(timeoutId);
         
-        // Обновляем badge на карточке
-        const card = document.querySelector(`[data-index="${index}"]`);
-        if (card) {
-            const viewsBadge = card.querySelector('.views-badge');
-            if (viewsBadge) {
-                viewsBadge.textContent = `${data.value} views`;
+        if (response.ok) {
+            const data = await response.json();
+            modalViews.textContent = `${data.value} views`;
+            
+            // Обновляем счетчик в массиве
+            allProducts[index].views = data.value;
+            
+            // Обновляем badge на карточке
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card) {
+                const viewsBadge = card.querySelector('.views-badge');
+                if (viewsBadge) {
+                    viewsBadge.textContent = `${data.value} views`;
+                }
             }
+            
+            console.log(`Счетчик обновлен для product-${index}: ${data.value}`);
+        } else {
+            throw new Error('API недоступен');
         }
     } catch (error) {
         // Если API недоступен, показываем статичное значение
+        console.log('CountAPI недоступен при открытии модалки:', error.message);
         modalViews.textContent = `${item.views} views`;
     }
     
@@ -169,7 +228,7 @@ async function openModal(item, index) {
     }
     
     modal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // блокируем скролл
+    document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
@@ -179,8 +238,16 @@ function closeModal() {
 }
 
 // Закрытие модалки
-document.querySelector('.modal-close').addEventListener('click', closeModal);
-document.querySelector('.modal-overlay').addEventListener('click', closeModal);
+const modalClose = document.querySelector('.modal-close');
+const modalOverlay = document.querySelector('.modal-overlay');
+
+if (modalClose) {
+    modalClose.addEventListener('click', closeModal);
+}
+
+if (modalOverlay) {
+    modalOverlay.addEventListener('click', closeModal);
+}
 
 // Закрытие по ESC
 document.addEventListener('keydown', (e) => {
