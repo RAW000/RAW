@@ -30,15 +30,13 @@ body {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 400;
   letter-spacing: 0.6px;
-} 
+}
 
 .after-header-text {
   width: 100%;
   text-align: center;
   padding: 20px 0;
   font-size: 16px;
-  color: #fff;
-  background: #0d0d0d;
   opacity: 0.9;
 }
 
@@ -46,7 +44,6 @@ body {
   width: 100%;
   text-align: center;
   padding: 20px 0;
-  color: #fff;
   font-size: 14px;
   opacity: 0.7;
 }
@@ -75,29 +72,29 @@ body {
 
 .filter-btn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255,255,255,0.3);
   color: #fff;
   padding: 8px 20px;
   font-size: 11px;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s;
   font-family: 'Space Grotesk', sans-serif;
 }
 
 .filter-btn:hover {
-  border-color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.05);
 }
 
 .filter-btn.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.8);
 }
 
 /* CONTENT */
 .content {
-  padding: 0 100px 60px 100px;
+  padding: 0 100px 60px;
   max-width: 1600px;
   margin: 0 auto;
 }
@@ -109,21 +106,15 @@ body {
   justify-content: center;
 }
 
-/* CARDS */
+/* CARD */
 .card {
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255,255,255,0.35);
   padding: 16px;
-  min-height: 180px;
   opacity: 0;
   transform: translateY(30px);
-  transition: all 0.8s ease;
+  transition: 0.8s;
   cursor: pointer;
   position: relative;
-}
-
-.card:hover {
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: translateY(-5px);
 }
 
 .card.show {
@@ -131,69 +122,63 @@ body {
   transform: translateY(0);
 }
 
+.card:hover {
+  border-color: rgba(255,255,255,0.6);
+  transform: translateY(-5px);
+}
+
 .card .img {
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  display: block;
   border: 1px solid rgba(255,255,255,0.3);
   margin-bottom: 12px;
 }
 
-/* SOLD OUT BADGE */
+/* BADGES */
 .sold-badge {
   position: absolute;
   top: 20px;
   left: 20px;
-  background: rgba(255, 0, 0, 0.9);
-  color: #fff;
+  background: rgba(255,0,0,0.9);
   padding: 6px 14px;
   font-size: 10px;
-  font-weight: bold;
   letter-spacing: 1px;
+  z-index: 5;
   font-family: 'Space Grotesk', sans-serif;
-  z-index: 10;
 }
 
-/* VIEWS COUNTER */
 .views-badge {
   position: absolute;
-  bottom: 20px;
+  bottom: 30px;
   right: 20px;
-  background: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  padding: 4px 10px;
+  background: rgba(0,0,0,0.8);
+  padding: 5px 12px;
   font-size: 9px;
-  letter-spacing: 0.5px;
+  border: 1px solid rgba(255,255,255,0.25);
   font-family: 'Space Grotesk', sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.3px;
 }
 
 /* CARD TEXT */
 .card h2 {
   font-size: 13px;
   font-weight: 300;
-  letter-spacing: 0.5px;
-  color: #fff;
 }
 
 .card p {
   font-size: 11px;
   opacity: 0.5;
-  color: #fff;
 }
 
-/* MODAL WINDOW */
+/* MODAL */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
+  inset: 0;
   display: none;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal.active {
@@ -202,42 +187,44 @@ body {
 
 .modal-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.92);
+  inset: 0;
+  background: rgba(0,0,0,0.92);
   backdrop-filter: blur(10px);
 }
 
 .modal-content {
-  position: relative;
   background: #1a1a1a;
   max-width: 900px;
   width: 90%;
   max-height: 85vh;
   overflow-y: auto;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 1001;
+  border: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+  z-index: 2;
 }
 
 .modal-close {
   position: absolute;
   top: 20px;
   right: 20px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
+  font-size: 28px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.4);
   cursor: pointer;
+  color: #fff;
   transition: all 0.3s;
-  z-index: 1002;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
 .modal-close:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.7);
   transform: rotate(90deg);
 }
 
@@ -256,64 +243,73 @@ body {
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255,255,255,0.3);
 }
 
 .modal-views {
   position: absolute;
-  bottom: 15px;
+  bottom: 25px;
   right: 15px;
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
   padding: 8px 16px;
   font-size: 11px;
-  letter-spacing: 0.5px;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.3);
   font-family: 'Space Grotesk', sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.4px;
 }
 
 .modal-info {
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 .modal-info h2 {
-  font-size: 20px;
-  font-weight: 300;
-  letter-spacing: 1px;
-  margin-bottom: 20px;
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: 400;
   font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.3px;
 }
 
 .modal-info p {
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 13px;
+  line-height: 1.7;
   opacity: 0.8;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   white-space: pre-line;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.2px;
 }
 
 .modal-tg-btn {
+  margin-top: auto;
+  padding: 15px 30px;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.05);
+  text-align: center;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
-  padding: 15px 30px;
-  text-decoration: none;
-  font-size: 12px;
-  letter-spacing: 1px;
-  transition: all 0.3s;
   font-family: 'Space Grotesk', sans-serif;
-  margin-top: auto;
+  letter-spacing: 0.5px;
+  transition: 0.3s;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .modal-tg-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.modal-tg-btn.sold-out {
+  background: rgba(255,0,0,0.2);
+  border-color: rgba(255,0,0,0.6);
+  color: #fff;
+  cursor: not-allowed;
 }
 
 .modal-tg-btn img {
@@ -324,97 +320,64 @@ body {
 /* FOOTER */
 footer {
   margin-top: 120px;
-  display: flex;
-  gap: 30px;
-  font-size: 12px;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: start;
+  column-gap: 20px;
+  font-size: 13px;
   padding-bottom: 40px;
-  flex-wrap: wrap;
-  row-gap: 15px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+footer > div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-self: start;
 }
 
 footer a {
   color: #fff;
+  opacity: 0.65;
   text-decoration: none;
-  opacity: 0.6;
   white-space: nowrap;
-}
-
-footer a.reviews-link {
-  opacity: 0.85;
-  font-weight: 500;
-  letter-spacing: 1.5px;
+  transition: opacity 0.3s;
 }
 
 footer a:hover {
   opacity: 1;
 }
 
-/* RESPONSIVE */
+footer .reviews-link,
+footer .html1-link {
+  color: #fff;
+  opacity: 0.85;
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+  padding-bottom: 3px;
+}
+
+/* MOBILE */
 @media (max-width: 768px) {
-  .header { 
-    height: 120px;
-    margin-bottom: 40px;
-  }
-  
-  .reviews-btn {
-    padding: 8px 20px;
-    font-size: 10px;
-  }
-  
-  .filters {
-    gap: 10px;
-    margin: 20px 0;
-  }
-  
-  .filter-btn {
-    padding: 6px 12px;
-    font-size: 10px;
-  }
-  
   .content {
-    padding: 0 20px 60px 20px;
+    padding: 0 20px 60px;
   }
-  
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
-  
-  .side {
-    width: 10px;
-  }
-  
-  .sold-badge {
-    font-size: 8px;
-    padding: 4px 10px;
-    top: 10px;
-    left: 10px;
-  }
-  
-  .views-badge {
-    font-size: 8px;
-    padding: 3px 8px;
-    bottom: 10px;
-    right: 10px;
-  }
-  
-  /* MODAL ON MOBILE */
-  .modal-content {
-    width: 95%;
-    max-height: 90vh;
-  }
-  
+
   .modal-body {
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 60px 20px 20px 20px;
+    padding: 60px 20px 20px;
   }
-  
-  .modal-close {
-    top: 10px;
-    right: 10px;
-    width: 35px;
-    height: 35px;
-    font-size: 20px;
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
