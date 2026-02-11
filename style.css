@@ -413,27 +413,68 @@ footer .html1-link {
     font-size: 8px;
     padding: 4px 8px;
   }
-  /* FIX MOBILE WIDTH / NO CUT */
-@media (max-width: 1024px) {
-  .side {
-    display: none !important;
+  /* CLEAN MOBILE MODAL */
+@media (max-width: 768px) {
+
+  .modal-content {
+    width: 94%;
+    max-height: 92vh;
+    overflow: hidden;
   }
 
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+    gap: 12px;
+    height: 100%;
+  }
+
+  .modal-image-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-image-container img {
+    max-height: 55vh;   /* уменьшаем картинку */
+    width: auto;
+    object-fit: contain;
+  }
+
+  .modal-info {
+    flex: 0;
+  }
+
+  .modal-info h2 {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .modal-info p {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+
+  .modal-tg-btn {
+    padding: 10px 14px;
+    font-size: 11px;
+  }
+
+}
+/* MOBILE: убрать полосы/горизонтальный скролл */
+@media (max-width: 768px) {
   html, body {
-    background: #0d0d0d !important;
-    width: 100% !important;
+    width: 100%;
+    max-width: 100%;
     overflow-x: hidden !important;
   }
 
-  .content {
-    padding: 0 12px 60px !important;
-    max-width: 100% !important;
-  }
+  .side { display: none !important; } /* белые боковины только на мобилке */
 
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 14px !important;
-  }
+  /* если полосы = скроллбар */
+  ::-webkit-scrollbar { width: 0; height: 0; }
 }
 
 }
