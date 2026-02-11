@@ -476,5 +476,23 @@ footer .html1-link {
   /* если полосы = скроллбар */
   ::-webkit-scrollbar { width: 0; height: 0; }
 }
+/* when modal open: stop background scroll/bounce */
+body.modal-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* modal should scroll, but not move background */
+.modal-content {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* disable hover animations on touch devices (they cause jumps) */
+@media (hover: none) and (pointer: coarse) {
+  .card:hover { transform: none; }
+  .modal-close:hover { transform: none; }
+  .filter-btn:hover { background: transparent; }
+}
 
 }

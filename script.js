@@ -1,6 +1,49 @@
 let allProducts = [];
 
-// загрузка товаров
+// ====== SCROLL LOCK (NO BACKGROUND SCROLL) ======
+let scrollPos = 0;
+
+function lockBodyScroll() {
+  scrollPos = window.scrollY || window.pageYOffset;
+
+  document.body.classList.add('modal-open');
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollPos}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+}
+
+function unlockBodyScroll() {
+  document.body.classList.remove('modal-open');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+
+  window.scrollTo(0, scrollPos);
+}
+
+// iOS/webview: чтобы при свайпе внутри модалки не двигался фон
+function preventTouchMove(e) {
+  const modalContent = document.querySelector('.modal-content');
+  if (!modalContent) return;
+
+  // разрешаем скролл только внутри .modal-content
+  if (!modalContent.contains(e.target)) {
+    e.preventDefault();
+  }
+}
+
+function enableTouchLock() {
+  document.addEventListener('touchmove', preventTouchMove, { passive: false });
+}
+function disableTouchLock() {
+  document.removeEventListener('touchmove', preventTouchMove, { passive: false });
+}
+
+// ====== LOAD PRODUCTS ======
 fetch('products.json')
   .then(res => res.json())
   .then(items => {
@@ -14,7 +57,7 @@ function renderProducts(items) {
   const grid = document.getElementById('products');
   grid.innerHTML = '';
 
-  items.forEach((item, index) => {
+  items.forEach((item) => {
     const card = document.createElement('div');
     card.className = 'card';
 
@@ -25,8 +68,8 @@ function renderProducts(items) {
     const viewsBadge = `<div class="views-badge">${item.views} views</div>`;
 
     // Parse description to highlight price
-    const descLines = item.desc.split('\n');
-    const priceLine = descLines[0]; // First line is price
+    const descLines = (item.desc || '').split('\n');
+    const priceLine = descLines[0] || '';
     const otherLines = descLines.slice(1).join('\n');
 
     card.innerHTML = `
@@ -58,7 +101,7 @@ function observeCards() {
   cards.forEach(c => observer.observe(c));
 }
 
-// фильтры
+// ====== FILTERS ======
 function setupFilters() {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -71,21 +114,21 @@ function setupFilters() {
 
       if (f === 'clothing') list = list.filter(p => p.category === 'clothing');
       if (f === 'accessories') list = list.filter(p => p.category === 'accessories');
-      if (f === 'price-low') list.sort((a,b)=>a.price-b.price);
-      if (f === 'price-high') list.sort((a,b)=>b.price-a.price);
+      if (f === 'price-low') list.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+      if (f === 'price-high') list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
 
       renderProducts(list);
     });
   });
 }
 
-// модалка
+// ====== MODAL ======
 function openModal(item) {
   const modal = document.getElementById('modal');
 
   document.getElementById('modal-image').src = item.image;
   document.getElementById('modal-name').textContent = item.name;
-  document.getElementById('modal-desc').textContent = item.desc;
+  document.getElementById('modal-desc').textContent = item.desc || '';
   document.getElementById('modal-views').textContent = `${item.views} views`;
 
   const link = document.getElementById('modal-tg-link');
@@ -100,12 +143,18 @@ function openModal(item) {
   }
 
   modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+
+  // 🔥 важно: сначала лочим фон
+  lockBodyScroll();
+  enableTouchLock();
 }
 
 function closeModal() {
-  document.getElementById('modal').classList.remove('active');
-  document.body.style.overflow = 'auto';
+  const modal = document.getElementById('modal');
+  modal.classList.remove('active');
+
+  disableTouchLock();
+  unlockBodyScroll();
 }
 
 document.querySelector('.modal-close')?.addEventListener('click', closeModal);
