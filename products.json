@@ -7,7 +7,7 @@
     "category": "clothing",
     "price": 15000,
     "sold": false,
-    "views": 73
+    "views": 101
   },
   {
     "name": "ERD melanholic s22 longsleave",
@@ -16,8 +16,8 @@
     "tgPost": "https://t.me/RAWSTORE111/66",
     "category": "clothing",
     "price": 13500,
-    "sold": false,
-    "views": 76
+    "sold": true,
+    "views": 101
   },
   {
     "name": "Chrome hearts transparent glasses",
@@ -27,7 +27,7 @@
     "category": "accessories",
     "price": 3260,
     "sold": true,
-    "views": 74
+    "views": 98
   },
   {
     "name": "Chrome hearts glases",
@@ -37,7 +37,7 @@
     "category": "accessories",
     "price": 3410,
     "sold": false,
-    "views": 75
+    "views": 98
   },
   {
     "name": "ERD backpack realtree",
@@ -47,7 +47,7 @@
     "category": "accessories",
     "price": null,
     "sold": true,
-    "views": 73
+    "views": 96
   },
   {
     "name": "Yeezy x ГОШАРУБЧИНСКИЙ T-shirt",
@@ -57,7 +57,7 @@
     "category": "clothing",
     "price": 5990,
     "sold": false,
-    "views": 64
+    "views": 86
   },
   {
     "name": "EVISU Osaka archive jeans, early 2000s",
@@ -67,7 +67,7 @@
     "category": "clothing",
     "price": 9900,
     "sold": false,
-    "views": 77
+    "views": 105
   },
   {
     "name": "Adidas Climawarm zip archive 2014",
@@ -77,6 +77,6 @@
     "category": "clothing",
     "price": 7000,
     "sold": false,
-    "views": 81
+    "views": 106
   }
 ]
