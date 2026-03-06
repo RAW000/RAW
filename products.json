@@ -58,25 +58,5 @@
     "price": 5990,
     "sold": false,
     "views": 86
-  },
-  {
-    "name": "EVISU Osaka archive jeans, early 2000s",
-    "desc": "Price: 9900тг.\nLEGIT.\nSize: M.\nCondition: 8/10.\nFull cotton.",
-    "image": "evisu.jpg",
-    "tgPost": "https://t.me/RAWSTORE111/45?single",
-    "category": "clothing",
-    "price": 9900,
-    "sold": false,
-    "views": 105
-  },
-  {
-    "name": "Adidas Climawarm zip archive 2014",
-    "desc": "Price: 7000тг.\nLEGIT.\nSize: M.\nCondition: 8/10.\nCotton with fleece.",
-    "image": "adidas.jpg",
-    "tgPost": "https://t.me/RAWSTORE111/51",
-    "category": "clothing",
-    "price": 7000,
-    "sold": false,
-    "views": 106
   }
 ]

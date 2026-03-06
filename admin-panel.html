@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAW — ADMIN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0a; --border: rgba(255,255,255,0.12);
+      --border-focus: rgba(255,255,255,0.5); --text: #fff;
+      --muted: rgba(255,255,255,0.4); --danger: #ff3b3b;
+      --success: #00ff88; --warn: #ffaa00;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; }
+
+    /* LOGIN */
+    #login-screen { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; }
+    .lock-wrap { position:relative; margin-bottom:36px; cursor:pointer; }
+    .lock-pulse { position:absolute; inset:-14px; border-radius:50%; border:1px solid rgba(255,255,255,0.08); animation:pulse 2.8s ease-in-out infinite; }
+    .lock-pulse2 { position:absolute; inset:-26px; border-radius:50%; border:1px solid rgba(255,255,255,0.04); animation:pulse 2.8s ease-in-out infinite 0.9s; }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.08);opacity:0.4} }
+    .lock-icon { width:68px; height:68px; border:1px solid rgba(255,255,255,0.18); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:border-color 0.3s; position:relative; z-index:1; }
+    .lock-wrap:hover .lock-icon { border-color:rgba(255,255,255,0.5); }
+    .lock-icon svg { width:26px; height:26px; stroke:rgba(255,255,255,0.75); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+    .login-eyebrow { font-size:9px; letter-spacing:4px; color:rgba(255,255,255,0.22); text-transform:uppercase; margin-bottom:8px; }
+    .login-title { font-size:30px; font-weight:700; letter-spacing:-0.5px; margin-bottom:5px; }
+    .login-sub { font-size:11px; color:rgba(255,255,255,0.28); letter-spacing:1px; margin-bottom:40px; }
+    .admin-badge { display:flex; align-items:center; gap:8px; padding:9px 18px; border:1px solid rgba(255,80,80,0.25); background:rgba(255,30,30,0.05); margin-bottom:36px; max-width:340px; }
+    .admin-badge-dot { width:6px; height:6px; border-radius:50%; background:#ff4444; flex-shrink:0; animation:blink 1.4s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.1} }
+    .admin-badge span { font-size:9px; letter-spacing:1.5px; color:rgba(255,100,100,0.6); text-transform:uppercase; line-height:1.5; }
+    .login-form { width:100%; max-width:340px; display:flex; flex-direction:column; }
+    .login-form input { background:transparent; border:1px solid var(--border); border-bottom:none; color:#fff; font-family:'Space Grotesk',sans-serif; font-size:13px; padding:14px 16px; outline:none; transition:border-color 0.2s; width:100%; }
+    .login-form input:last-of-type { border-bottom:1px solid var(--border); }
+    .login-form input::placeholder { color:rgba(255,255,255,0.2); }
+    .login-form input:focus { border-color:rgba(255,255,255,0.4); z-index:1; position:relative; }
+    .btn-login { margin-top:14px; width:100%; padding:14px; background:#fff; color:#000; border:none; font-family:'Space Grotesk',sans-serif; font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:opacity 0.2s; }
+    .btn-login:hover { opacity:0.85; }
+    .btn-login:disabled { opacity:0.3; cursor:not-allowed; }
+    .login-error { margin-top:12px; font-size:10px; letter-spacing:1px; color:var(--danger); text-align:center; min-height:16px; }
+
+    /* ADMIN */
+    #admin-screen { display:none; }
+    #admin-screen.visible { display:block; }
+    .tab-nav { position:sticky; top:0; z-index:50; background:#0a0a0a; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 40px; }
+    .tab-nav-left { display:flex; flex:1; }
+    .tab-btn { background:transparent; border:none; border-bottom:2px solid transparent; color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; padding:18px 24px; cursor:pointer; transition:all 0.2s; }
+    .tab-btn:hover { color:#fff; }
+    .tab-btn.active { color:#fff; border-bottom-color:#fff; }
+    .btn-logout { background:transparent; border:1px solid var(--border); color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; padding:7px 14px; cursor:pointer; transition:all 0.2s; }
+    .btn-logout:hover { color:#fff; border-color:rgba(255,255,255,0.3); }
+    .tab-content { display:none; padding:40px; max-width:680px; margin:0 auto; }
+    .tab-content.active { display:block; }
+
+    /* FORM */
+    .panel-header { margin-bottom:40px; }
+    .panel-header .label { font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+    .panel-header h1 { font-size:32px; font-weight:700; letter-spacing:-1px; line-height:1; }
+    .panel-header h1 span { color:var(--muted); font-weight:300; }
+    .fields { display:flex; flex-direction:column; }
+    .field { border-top:1px solid var(--border); padding:18px 0; display:grid; grid-template-columns:120px 1fr; align-items:start; gap:16px; }
+    .field:last-of-type { border-bottom:1px solid var(--border); }
+    .field-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; padding-top:11px; line-height:1.3; }
+    .field-label .required { color:var(--danger); margin-left:2px; }
+    input, textarea, select { background:transparent; border:1px solid var(--border); color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:13px; padding:10px 14px; width:100%; outline:none; transition:border-color 0.2s; letter-spacing:0.3px; appearance:none; }
+    input::placeholder, textarea::placeholder { color:rgba(255,255,255,0.2); }
+    input:focus, textarea:focus, select:focus { border-color:var(--border-focus); }
+    textarea { resize:vertical; min-height:80px; line-height:1.6; }
+    select { cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; }
+    select option { background:#111; color:#fff; }
+    .toggle-group { display:flex; }
+    .toggle-btn { flex:1; padding:10px; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+    .toggle-btn:first-child { border-right:none; }
+    .toggle-btn.active { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.4); color:#fff; }
+    .img-preview { margin-top:10px; width:100%; aspect-ratio:3/4; border:1px solid var(--border); display:none; overflow:hidden; }
+    .img-preview img { width:100%; height:100%; object-fit:cover; }
+    .img-preview-placeholder { width:100%; aspect-ratio:3/4; border:1px dashed rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:10px; letter-spacing:1px; color:rgba(255,255,255,0.15); text-transform:uppercase; margin-top:10px; }
+    .img-upload-row { display:flex; gap:8px; margin-bottom:8px; }
+    .btn-upload-file { flex:1; padding:10px 14px; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; text-align:center; }
+    .btn-upload-file:hover { color:#fff; border-color:rgba(255,255,255,0.4); }
+    .btn-upload-file.uploading { pointer-events:none; opacity:0.5; }
+    .upload-divider { display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:9px; letter-spacing:2px; color:rgba(255,255,255,0.2); text-transform:uppercase; }
+    .upload-divider::before, .upload-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.08); }
+    .char-hint { font-size:9px; color:rgba(255,255,255,0.2); letter-spacing:1px; margin-top:5px; text-align:right; }
+    .json-preview { background:#0d0d0d; border:1px solid var(--border); padding:14px; font-size:11px; font-family:'Courier New',monospace; color:rgba(255,255,255,0.5); line-height:1.6; margin-top:32px; white-space:pre; overflow-x:auto; }
+    .json-key { color:rgba(255,255,255,0.35); }
+    .json-string { color:#aaffcc; }
+    .json-number { color:#ffcc88; }
+    .json-bool { color:#88ccff; }
+    .actions { margin-top:32px; display:flex; flex-direction:column; gap:10px; }
+    .btn-submit { width:100%; padding:15px; background:#fff; color:#000; border:none; font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:opacity 0.2s; }
+    .btn-submit:hover { opacity:0.85; }
+    .btn-submit:disabled { opacity:0.3; cursor:not-allowed; }
+    .btn-secondary { width:100%; padding:12px; background:transparent; color:var(--muted); border:1px solid var(--border); font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+    .btn-secondary:hover { color:#fff; border-color:rgba(255,255,255,0.3); }
+
+    /* PRODUCT LIST */
+    .list-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+    .list-header h2 { font-size:24px; font-weight:700; letter-spacing:-0.5px; }
+    .list-count { font-size:10px; letter-spacing:2px; color:var(--muted); }
+    .product-list { display:flex; flex-direction:column; }
+    .product-row { border-top:1px solid var(--border); display:grid; grid-template-columns:56px 1fr auto; gap:16px; align-items:center; padding:14px 0; transition:background 0.15s; }
+    .product-row:last-child { border-bottom:1px solid var(--border); }
+    .product-row:hover { background:rgba(255,255,255,0.02); }
+    .product-thumb { width:56px; height:72px; object-fit:cover; border:1px solid var(--border); flex-shrink:0; }
+    .product-info { min-width:0; }
+    .product-name { font-size:13px; font-weight:500; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .product-meta { display:flex; gap:10px; align-items:center; }
+    .product-price { font-size:11px; color:var(--muted); }
+    .product-cat { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; padding:2px 7px; border:1px solid var(--border); color:var(--muted); }
+    .sold-tag { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; padding:2px 7px; border:1px solid rgba(255,60,60,0.4); color:rgba(255,100,100,0.7); background:rgba(255,0,0,0.05); }
+    .product-actions { display:flex; gap:8px; flex-shrink:0; }
+    .btn-edit { padding:7px 14px; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+    .btn-edit:hover { color:#fff; border-color:rgba(255,255,255,0.4); }
+    .btn-delete { padding:7px 14px; background:transparent; border:1px solid rgba(255,60,60,0.25); color:rgba(255,100,100,0.5); font-family:'Space Grotesk',sans-serif; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+    .btn-delete:hover { color:var(--danger); border-color:var(--danger); background:rgba(255,0,0,0.05); }
+    .list-loading { text-align:center; padding:60px 0; font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+
+    /* ORDER TAB */
+    .order-header { margin-bottom:28px; }
+    .order-header h2 { font-size:24px; font-weight:700; letter-spacing:-0.5px; margin-bottom:8px; }
+    .order-hint { font-size:11px; color:var(--muted); letter-spacing:0.5px; line-height:1.6; }
+    .order-list { display:flex; flex-direction:column; gap:0; margin-bottom:32px; }
+    .order-row { border-top:1px solid var(--border); display:grid; grid-template-columns:32px 56px 1fr; gap:14px; align-items:center; padding:12px 0; cursor:grab; transition:background 0.15s, opacity 0.2s; user-select:none; }
+    .order-row:last-child { border-bottom:1px solid var(--border); }
+    .order-row:active { cursor:grabbing; }
+    .order-row.dragging { opacity:0.35; background:rgba(255,255,255,0.03); }
+    .order-row.drag-over { background:rgba(255,255,255,0.06); border-top-color:rgba(255,255,255,0.4); }
+    .drag-handle { display:flex; flex-direction:column; gap:3px; align-items:center; justify-content:center; padding:4px; opacity:0.3; transition:opacity 0.2s; }
+    .order-row:hover .drag-handle { opacity:0.7; }
+    .drag-handle span { display:block; width:18px; height:1px; background:#fff; }
+    .order-thumb { width:56px; height:72px; object-fit:cover; border:1px solid var(--border); }
+    .order-info { min-width:0; }
+    .order-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px; }
+    .order-pos { font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+    .btn-save-order { width:100%; padding:15px; background:#fff; color:#000; border:none; font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:opacity 0.2s; }
+    .btn-save-order:hover { opacity:0.85; }
+    .btn-save-order:disabled { opacity:0.3; cursor:not-allowed; }
+    .order-changed-hint { font-size:10px; letter-spacing:1px; color:var(--warn); text-align:center; margin-top:12px; min-height:16px; }
+
+    /* EDIT MODAL */
+    .edit-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(10px); z-index:200; display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:40px 20px; }
+    .edit-overlay.open { display:flex; }
+    .edit-modal { background:#111; border:1px solid rgba(255,255,255,0.15); width:100%; max-width:560px; position:relative; margin:auto; }
+    .edit-modal-header { padding:24px 28px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .edit-modal-header h3 { font-size:16px; font-weight:700; letter-spacing:-0.3px; }
+    .btn-close-modal { width:36px; height:36px; background:transparent; border:1px solid var(--border); color:var(--muted); font-size:20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+    .btn-close-modal:hover { color:#fff; border-color:rgba(255,255,255,0.4); }
+    .edit-modal-body { padding:28px; }
+    .edit-actions { padding:20px 28px; border-top:1px solid var(--border); display:flex; gap:10px; }
+
+    /* CONFIRM */
+    .confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.95); backdrop-filter:blur(6px); z-index:300; display:none; align-items:center; justify-content:center; padding:20px; }
+    .confirm-overlay.open { display:flex; }
+    .confirm-box { background:#111; border:1px solid rgba(255,60,60,0.3); padding:36px; max-width:360px; width:100%; text-align:center; }
+    .confirm-box h4 { font-size:16px; font-weight:700; margin-bottom:10px; }
+    .confirm-box p { font-size:12px; color:var(--muted); margin-bottom:28px; line-height:1.6; }
+    .confirm-btns { display:flex; gap:10px; }
+    .btn-confirm-delete { flex:1; padding:13px; background:var(--danger); color:#fff; border:none; font-family:'Space Grotesk',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:opacity 0.2s; }
+    .btn-confirm-delete:hover { opacity:0.85; }
+    .btn-confirm-cancel { flex:1; padding:13px; background:transparent; color:var(--muted); border:1px solid var(--border); font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+    .btn-confirm-cancel:hover { color:#fff; }
+
+    /* UPLOAD OVERLAY */
+    .upload-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(16px); z-index:500; display:none; flex-direction:column; align-items:center; justify-content:center; gap:32px; }
+    .upload-overlay.active { display:flex; }
+    .upload-spinner { width:60px; height:60px; position:relative; }
+    .upload-spinner::before { content:''; position:absolute; inset:0; border-radius:50%; border:1px solid rgba(255,255,255,0.08); }
+    .upload-spinner::after { content:''; position:absolute; inset:5px; border-radius:50%; border:1.5px solid transparent; border-top-color:#fff; animation:spin 0.75s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .upload-overlay-label { font-size:10px; letter-spacing:4px; color:rgba(255,255,255,0.3); text-transform:uppercase; }
+    .upload-overlay-title { font-size:18px; font-weight:700; letter-spacing:-0.3px; }
+    .upload-overlay-file { font-size:10px; letter-spacing:1px; color:rgba(255,255,255,0.3); max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center; }
+    .upload-progress-track { width:220px; height:1px; background:rgba(255,255,255,0.1); overflow:hidden; position:relative; }
+    .upload-progress-bar { position:absolute; left:-100%; top:0; width:100%; height:100%; background:#fff; animation:slide 1.1s ease-in-out infinite; }
+    @keyframes slide { 0%{left:-100%} 100%{left:100%} }
+
+    /* TOAST */
+    .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--success); color:#000; padding:12px 28px; font-size:11px; letter-spacing:2px; font-weight:700; text-transform:uppercase; opacity:0; transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1); pointer-events:none; white-space:nowrap; z-index:999; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.error { background:var(--danger); color:#fff; }
+    .toast.warn { background:var(--warn); color:#000; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lock-wrap" onclick="document.getElementById('login-email').focus()">
+    <div class="lock-pulse2"></div>
+    <div class="lock-pulse"></div>
+    <div class="lock-icon">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+  </div>
+  <div class="login-eyebrow">RAW STORE — SYSTEM</div>
+  <div class="login-title">ADMIN ACCESS</div>
+  <div class="login-sub">RAWHUB</div>
+  <div class="admin-badge">
+    <div class="admin-badge-dot"></div>
+    <span>VXOD TOLЬKO DLЯ ИЗБRANNЫX</span>
+  </div>
+  <div class="login-form">
+    <input type="email" id="login-email" placeholder="Email">
+    <input type="password" id="login-pass" placeholder="Password">
+    <button class="btn-login" id="login-btn" onclick="doLogin()">— ENTER —</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <div class="tab-nav">
+    <div class="tab-nav-left">
+      <button class="tab-btn active" data-tab="add" onclick="switchTab('add',this)">+ ADD</button>
+      <button class="tab-btn" data-tab="list" onclick="switchTab('list',this)">PRODUCTS <span id="tab-count" style="opacity:0.4"></span></button>
+      <button class="tab-btn" data-tab="order" onclick="switchTab('order',this)">⇅ ORDER</button>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">LOGOUT</button>
+  </div>
+
+  <!-- ADD TAB -->
+  <div class="tab-content active" id="tab-add">
+    <div class="panel-header">
+      <div class="label">RAW STORE — BACKEND</div>
+      <h1>ADD <span>PRODUCT</span></h1>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <div class="field-label">NAME <span class="required">*</span></div>
+        <input type="text" id="f-name" placeholder="Rick Owens Mountain Zip Up" maxlength="80">
+      </div>
+      <div class="field">
+        <div class="field-label">PRICE <span class="required">*</span><br><span style="font-size:9px;display:block;margin-top:3px;">тг</span></div>
+        <input type="number" id="f-price" placeholder="15000" min="0">
+      </div>
+      <div class="field">
+        <div class="field-label">CATEGORY <span class="required">*</span></div>
+        <select id="f-category">
+          <option value="clothing">CLOTHING</option>
+          <option value="accessories">ACCESSORIES</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-label">DESC<br><span style="font-size:9px;display:block;margin-top:3px;">каждая строка — новая линия</span></div>
+        <div>
+          <textarea id="f-desc" placeholder="Price: 15000тг.&#10;Size: M.&#10;Quality: new.&#10;Material: cotton."></textarea>
+          <div class="char-hint" id="char-count">0 chars</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">IMAGE <span class="required">*</span></div>
+        <div>
+          <div class="img-upload-row">
+            <label class="btn-upload-file" id="f-upload-label" for="f-file-input">⬆ UPLOAD FILE</label>
+            <input type="file" id="f-file-input" accept="image/*" style="display:none">
+          </div>
+          <div class="upload-divider">or</div>
+          <input type="url" id="f-image" placeholder="https://вставить ссылку...">
+          <div class="img-preview-placeholder" id="img-placeholder">PREVIEW</div>
+          <div class="img-preview" id="img-preview"><img id="img-preview-img" src="" alt=""></div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">TG POST</div>
+        <input type="url" id="f-tgpost" placeholder="https://t.me/RAWSTORE111/41">
+      </div>
+      <div class="field">
+        <div class="field-label">SOLD OUT</div>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="btn-not-sold" onclick="setSold(false)">IN STOCK</button>
+          <button class="toggle-btn" id="btn-sold" onclick="setSold(true)">SOLD OUT</button>
+        </div>
+      </div>
+    </div>
+    <div class="json-preview" id="json-preview">{
+  <span class="json-key">"name"</span>: <span class="json-string">""</span>,
+  <span class="json-key">"price"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"category"</span>: <span class="json-string">"clothing"</span>,
+  <span class="json-key">"desc"</span>: <span class="json-string">""</span>,
+  <span class="json-key">"image"</span>: <span class="json-string">""</span>,
+  <span class="json-key">"tgPost"</span>: <span class="json-string">""</span>,
+  <span class="json-key">"sold"</span>: <span class="json-bool">false</span>
+}</div>
+    <div class="actions">
+      <button class="btn-submit" id="btn-submit" onclick="submitProduct()">— ADD TO FIREBASE —</button>
+      <button class="btn-secondary" onclick="resetForm()">CLEAR FORM</button>
+    </div>
+  </div>
+
+  <!-- LIST TAB -->
+  <div class="tab-content" id="tab-list">
+    <div class="list-header">
+      <h2>ALL <span style="color:var(--muted);font-weight:300">PRODUCTS</span></h2>
+      <span class="list-count" id="list-count-label"></span>
+    </div>
+    <div class="product-list" id="product-list">
+      <div class="list-loading">LOADING...</div>
+    </div>
+  </div>
+
+  <!-- ORDER TAB -->
+  <div class="tab-content" id="tab-order">
+    <div class="order-header">
+      <h2>SORT <span style="color:var(--muted);font-weight:300">ORDER</span></h2>
+      <p class="order-hint">Перетаскивай строки чтобы изменить порядок.<br>Нажми SAVE когда готово — сохранится на сайте.</p>
+    </div>
+    <div class="order-list" id="order-list">
+      <div class="list-loading">LOADING...</div>
+    </div>
+    <button class="btn-save-order" id="btn-save-order" onclick="saveOrder()">— SAVE ORDER —</button>
+    <div class="order-changed-hint" id="order-hint"></div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="edit-overlay" id="edit-overlay">
+  <div class="edit-modal">
+    <div class="edit-modal-header">
+      <div>
+        <div style="font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">EDITING</div>
+        <h3 id="edit-modal-title">Product Name</h3>
+      </div>
+      <button class="btn-close-modal" onclick="closeEditModal()">×</button>
+    </div>
+    <div class="edit-modal-body">
+      <div class="fields">
+        <div class="field">
+          <div class="field-label">NAME <span class="required">*</span></div>
+          <input type="text" id="e-name" maxlength="80">
+        </div>
+        <div class="field">
+          <div class="field-label">PRICE<br><span style="font-size:9px;display:block;margin-top:3px;">тг</span></div>
+          <input type="number" id="e-price" min="0">
+        </div>
+        <div class="field">
+          <div class="field-label">CATEGORY</div>
+          <select id="e-category">
+            <option value="clothing">CLOTHING</option>
+            <option value="accessories">ACCESSORIES</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">DESC</div>
+          <textarea id="e-desc"></textarea>
+        </div>
+        <div class="field">
+          <div class="field-label">IMAGE</div>
+          <div>
+            <div class="img-upload-row">
+              <label class="btn-upload-file" id="e-upload-label" for="e-file-input">⬆ UPLOAD FILE</label>
+              <input type="file" id="e-file-input" accept="image/*" style="display:none">
+            </div>
+            <div class="upload-divider">or</div>
+            <input type="url" id="e-image" placeholder="https://вставить ссылку...">
+            <div class="img-preview-placeholder" id="e-img-placeholder">PREVIEW</div>
+            <div class="img-preview" id="e-img-preview"><img id="e-img-preview-img" src="" alt=""></div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">TG POST</div>
+          <input type="url" id="e-tgpost">
+        </div>
+        <div class="field">
+          <div class="field-label">SOLD OUT</div>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="e-btn-not-sold" onclick="setEditSold(false)">IN STOCK</button>
+            <button class="toggle-btn" id="e-btn-sold" onclick="setEditSold(true)">SOLD OUT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="edit-actions">
+      <button class="btn-submit" style="flex:1" onclick="saveEdit()">— SAVE CHANGES —</button>
+      <button class="btn-secondary" style="width:auto;padding:12px 20px" onclick="closeEditModal()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <h4>DELETE PRODUCT?</h4>
+    <p id="confirm-product-name" style="color:#fff;opacity:0.7;margin-bottom:6px;font-size:13px;"></p>
+    <p>Это действие нельзя отменить. Товар будет удалён из Firebase навсегда.</p>
+    <div class="confirm-btns">
+      <button class="btn-confirm-delete" onclick="confirmDelete()">DELETE</button>
+      <button class="btn-confirm-cancel" onclick="closeConfirm()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD OVERLAY -->
+<div class="upload-overlay" id="upload-overlay">
+  <div class="upload-spinner"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <div class="upload-overlay-label">RAW STORE</div>
+    <div class="upload-overlay-title">UPLOADING PHOTO</div>
+    <div class="upload-overlay-file" id="upload-overlay-filename"></div>
+  </div>
+  <div class="upload-progress-track">
+    <div class="upload-progress-bar"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMjvCNkx5-2nl5Ybjp49cv2P8YAkOyzsk",
+    authDomain: "rawstore111.firebaseapp.com",
+    projectId: "rawstore111",
+    storageBucket: "rawstore111.firebasestorage.app",
+    messagingSenderId: "249110623807",
+    appId: "1:249110623807:web:74a827237f3b5efb78ea8a",
+    measurementId: "G-RJKZX37KYM"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  window._db = db;
+  window._col = collection;
+  window._getDocs = getDocs;
+  window._addDoc = addDoc;
+  window._updateDoc = updateDoc;
+  window._deleteDoc = deleteDoc;
+  window._doc = doc;
+  window._writeBatch = writeBatch;
+  window._auth = auth;
+  window._signIn = signInWithEmailAndPassword;
+  window._signOut = signOut;
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-screen').classList.add('visible');
+      window.loadProductList();
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('admin-screen').classList.remove('visible');
+    }
+  });
+</script>
+
+<script>
+  let soldState = false;
+  let editSoldState = false;
+  let editingDocId = null;
+  let deleteDocId = null;
+  let cachedProducts = [];
+  let orderProducts = [];
+  let dragSrcIndex = null;
+
+  // AUTH
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    const btn = document.getElementById('login-btn');
+    const err = document.getElementById('login-error');
+    if (!email || !pass) { err.textContent = 'FILL ALL FIELDS'; return; }
+    btn.disabled = true; btn.textContent = '— CHECKING... —'; err.textContent = '';
+    try { await window._signIn(window._auth, email, pass); }
+    catch(e) { err.textContent = 'WRONG EMAIL OR PASSWORD'; btn.disabled = false; btn.textContent = '— ENTER —'; }
+  }
+  async function doLogout() { await window._signOut(window._auth); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') doLogin();
+    if (e.key === 'Escape') { closeEditModal(); closeConfirm(); }
+  });
+
+  // TABS
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    if (name === 'list') loadProductList();
+    if (name === 'order') loadOrderList();
+  }
+
+  // FETCH
+  async function fetchProducts() {
+    const snap = await window._getDocs(window._col(window._db, 'products'));
+    let items = [];
+    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+    items.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
+    return items;
+  }
+
+  async function loadProductList() {
+    const listEl = document.getElementById('product-list');
+    listEl.innerHTML = '<div class="list-loading">LOADING...</div>';
+    cachedProducts = await fetchProducts();
+    const count = cachedProducts.length;
+    document.getElementById('tab-count').textContent = count;
+    document.getElementById('list-count-label').textContent = count + ' items';
+    if (count === 0) { listEl.innerHTML = '<div class="list-loading">NO PRODUCTS YET</div>'; return; }
+    listEl.innerHTML = '';
+    cachedProducts.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'product-row';
+      row.innerHTML =
+        '<img class="product-thumb" src="' + p.image + '" alt="" onerror="this.style.opacity=\'0.2\'">' +
+        '<div class="product-info">' +
+          '<div class="product-name">' + p.name + '</div>' +
+          '<div class="product-meta">' +
+            '<span class="product-price">' + (p.price ? p.price + ' тг' : '—') + '</span>' +
+            '<span class="product-cat">' + (p.category || '—') + '</span>' +
+            (p.sold ? '<span class="sold-tag">SOLD OUT</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="product-actions">' +
+          '<button class="btn-edit" onclick="openEditModal(\'' + p.id + '\')">EDIT</button>' +
+          '<button class="btn-delete" onclick="askDelete(\'' + p.id + '\', \'' + p.name.replace(/'/g,"\\'") + '\')">DEL</button>' +
+        '</div>';
+      listEl.appendChild(row);
+    });
+  }
+
+  // ORDER
+  async function loadOrderList() {
+    const listEl = document.getElementById('order-list');
+    listEl.innerHTML = '<div class="list-loading">LOADING...</div>';
+    orderProducts = await fetchProducts();
+    document.getElementById('order-hint').textContent = '';
+    renderOrderList();
+  }
+
+  function renderOrderList() {
+    const listEl = document.getElementById('order-list');
+    listEl.innerHTML = '';
+    orderProducts.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'order-row';
+      row.draggable = true;
+      row.dataset.index = i;
+      row.innerHTML =
+        '<div class="drag-handle"><span></span><span></span><span></span></div>' +
+        '<img class="order-thumb" src="' + p.image + '" alt="" onerror="this.style.opacity=\'0.2\'">' +
+        '<div class="order-info">' +
+          '<div class="order-name">' + p.name + '</div>' +
+          '<div class="order-pos"># ' + (i + 1) + '</div>' +
+        '</div>';
+      row.addEventListener('dragstart', onDragStart);
+      row.addEventListener('dragover', onDragOver);
+      row.addEventListener('drop', onDrop);
+      row.addEventListener('dragend', onDragEnd);
+      row.addEventListener('touchstart', onTouchStart, { passive: true });
+      row.addEventListener('touchmove', onTouchMove, { passive: false });
+      row.addEventListener('touchend', onTouchEnd);
+      listEl.appendChild(row);
+    });
+  }
+
+  function onDragStart(e) { dragSrcIndex = parseInt(this.dataset.index); this.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+  function onDragOver(e) { e.preventDefault(); document.querySelectorAll('.order-row').forEach(r => r.classList.remove('drag-over')); this.classList.add('drag-over'); }
+  function onDrop(e) {
+    e.preventDefault();
+    const targetIndex = parseInt(this.dataset.index);
+    if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+    const moved = orderProducts.splice(dragSrcIndex, 1)[0];
+    orderProducts.splice(targetIndex, 0, moved);
+    dragSrcIndex = null;
+    document.getElementById('order-hint').textContent = 'UNSAVED CHANGES — нажми SAVE ORDER';
+    renderOrderList();
+  }
+  function onDragEnd() { document.querySelectorAll('.order-row').forEach(r => { r.classList.remove('dragging'); r.classList.remove('drag-over'); }); dragSrcIndex = null; }
+
+  let touchSrcIndex = null;
+  function onTouchStart(e) { touchSrcIndex = parseInt(this.dataset.index); this.classList.add('dragging'); }
+  function onTouchMove(e) {
+    e.preventDefault();
+    const y = e.touches[0].clientY;
+    document.querySelectorAll('.order-row').forEach(r => {
+      r.classList.remove('drag-over');
+      const rect = r.getBoundingClientRect();
+      if (y >= rect.top && y <= rect.bottom) r.classList.add('drag-over');
+    });
+  }
+  function onTouchEnd(e) {
+    const y = e.changedTouches[0].clientY;
+    let targetIndex = null;
+    document.querySelectorAll('.order-row').forEach(r => {
+      r.classList.remove('dragging'); r.classList.remove('drag-over');
+      const rect = r.getBoundingClientRect();
+      if (y >= rect.top && y <= rect.bottom) targetIndex = parseInt(r.dataset.index);
+    });
+    if (targetIndex !== null && targetIndex !== touchSrcIndex) {
+      const moved = orderProducts.splice(touchSrcIndex, 1)[0];
+      orderProducts.splice(targetIndex, 0, moved);
+      document.getElementById('order-hint').textContent = 'UNSAVED CHANGES — нажми SAVE ORDER';
+      renderOrderList();
+    }
+    touchSrcIndex = null;
+  }
+
+  async function saveOrder() {
+    const btn = document.getElementById('btn-save-order');
+    btn.disabled = true; btn.textContent = '— SAVING... —';
+    try {
+      const batch = window._writeBatch(window._db);
+      orderProducts.forEach((p, i) => batch.update(window._doc(window._db, 'products', p.id), { order: i }));
+      await batch.commit();
+      document.getElementById('order-hint').textContent = '';
+      showToast('ORDER SAVED ✓');
+    } catch(e) { showToast('ERROR: ' + e.message, true); }
+    btn.disabled = false; btn.textContent = '— SAVE ORDER —';
+  }
+
+  // EDIT MODAL
+  function openEditModal(docId) {
+    const p = cachedProducts.find(x => x.id === docId);
+    if (!p) return;
+    editingDocId = docId; editSoldState = !!p.sold;
+    document.getElementById('edit-modal-title').textContent = p.name;
+    document.getElementById('e-name').value = p.name || '';
+    document.getElementById('e-price').value = p.price || '';
+    document.getElementById('e-category').value = p.category || 'clothing';
+    document.getElementById('e-desc').value = p.desc || '';
+    document.getElementById('e-image').value = p.image || '';
+    document.getElementById('e-tgpost').value = p.tgPost || '';
+    const prev = document.getElementById('e-img-preview');
+    const ph = document.getElementById('e-img-placeholder');
+    if (p.image) { document.getElementById('e-img-preview-img').src = p.image; prev.style.display='block'; ph.style.display='none'; }
+    else { prev.style.display='none'; ph.style.display='flex'; }
+    setEditSold(editSoldState);
+    document.getElementById('edit-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeEditModal() { document.getElementById('edit-overlay').classList.remove('open'); document.body.style.overflow = ''; editingDocId = null; }
+  function setEditSold(val) {
+    editSoldState = val;
+    document.getElementById('e-btn-sold').classList.toggle('active', val);
+    document.getElementById('e-btn-not-sold').classList.toggle('active', !val);
+  }
+  document.getElementById('e-image').addEventListener('input', function() {
+    const url = this.value.trim();
+    const prev = document.getElementById('e-img-preview'), ph = document.getElementById('e-img-placeholder'), img = document.getElementById('e-img-preview-img');
+    if (url) { img.src = url; img.onload = () => { prev.style.display='block'; ph.style.display='none'; }; img.onerror = () => { prev.style.display='none'; ph.style.display='flex'; }; }
+    else { prev.style.display='none'; ph.style.display='flex'; }
+  });
+  async function saveEdit() {
+    if (!editingDocId) return;
+    const name = document.getElementById('e-name').value.trim();
+    const image = document.getElementById('e-image').value.trim();
+    if (!name || !image) { showToast('NAME AND IMAGE REQUIRED', true); return; }
+    await window._updateDoc(window._doc(window._db, 'products', editingDocId), {
+      name, price: document.getElementById('e-price').value ? Number(document.getElementById('e-price').value) : null,
+      category: document.getElementById('e-category').value,
+      desc: document.getElementById('e-desc').value.trim(),
+      image, tgPost: document.getElementById('e-tgpost').value.trim() || 'https://t.me/RAWSTORE111',
+      sold: editSoldState
+    });
+    showToast('SAVED ✓'); closeEditModal(); loadProductList();
+  }
+
+  // DELETE
+  function askDelete(docId, name) { deleteDocId = docId; document.getElementById('confirm-product-name').textContent = name; document.getElementById('confirm-overlay').classList.add('open'); }
+  function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); deleteDocId = null; }
+  async function confirmDelete() {
+    if (!deleteDocId) return;
+    await window._deleteDoc(window._doc(window._db, 'products', deleteDocId));
+    showToast('DELETED', false, 'warn'); closeConfirm(); loadProductList();
+  }
+
+  // ADD PRODUCT
+  function setSold(val) {
+    soldState = val;
+    document.getElementById('btn-sold').classList.toggle('active', val);
+    document.getElementById('btn-not-sold').classList.toggle('active', !val);
+    updatePreview();
+  }
+  function updatePreview() {
+    const name = document.getElementById('f-name').value;
+    const price = Number(document.getElementById('f-price').value) || 0;
+    const category = document.getElementById('f-category').value;
+    const desc = document.getElementById('f-desc').value;
+    const image = document.getElementById('f-image').value;
+    const tgPost = document.getElementById('f-tgpost').value;
+    document.getElementById('json-preview').innerHTML =
+      '{\n  <span class="json-key">"name"</span>: <span class="json-string">"' + esc(name) + '"</span>,\n' +
+      '  <span class="json-key">"price"</span>: <span class="json-number">' + price + '</span>,\n' +
+      '  <span class="json-key">"category"</span>: <span class="json-string">"' + category + '"</span>,\n' +
+      '  <span class="json-key">"desc"</span>: <span class="json-string">"' + esc(desc) + '"</span>,\n' +
+      '  <span class="json-key">"image"</span>: <span class="json-string">"' + esc(image) + '"</span>,\n' +
+      '  <span class="json-key">"tgPost"</span>: <span class="json-string">"' + esc(tgPost) + '"</span>,\n' +
+      '  <span class="json-key">"sold"</span>: <span class="json-bool">' + soldState + '</span>\n}';
+  }
+  function esc(s) { return (s||'').replace(/"/g,'\\"').replace(/\n/g,'\\n'); }
+  document.getElementById('f-image').addEventListener('input', function() {
+    const url = this.value.trim();
+    const preview = document.getElementById('img-preview'), ph = document.getElementById('img-placeholder'), img = document.getElementById('img-preview-img');
+    if (url) { img.src = url; img.onload = () => { preview.style.display='block'; ph.style.display='none'; }; img.onerror = () => { preview.style.display='none'; ph.style.display='flex'; }; }
+    else { preview.style.display='none'; ph.style.display='flex'; }
+    updatePreview();
+  });
+  document.getElementById('f-desc').addEventListener('input', function() {
+    document.getElementById('char-count').textContent = this.value.length + ' chars';
+    updatePreview();
+  });
+  ['f-name','f-price','f-category','f-tgpost'].forEach(id => document.getElementById(id)?.addEventListener('input', updatePreview));
+  async function submitProduct() {
+    const name = document.getElementById('f-name').value.trim();
+    const price = document.getElementById('f-price').value;
+    const image = document.getElementById('f-image').value.trim();
+    const desc = document.getElementById('f-desc').value.trim();
+    const category = document.getElementById('f-category').value;
+    const tgPost = document.getElementById('f-tgpost').value.trim();
+    if (!name || !price || !image) { showToast('FILL REQUIRED FIELDS', true); return; }
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true; btn.textContent = '— SENDING... —';
+    try {
+      await window._addDoc(window._col(window._db, 'products'), {
+        name, price: Number(price), category, desc, image,
+        tgPost: tgPost || 'https://t.me/RAWSTORE111', views: 0, sold: soldState, order: 9999
+      });
+      showToast('ADDED ✓'); resetForm();
+    } catch(e) { showToast('ERROR: ' + e.message, true); }
+    btn.disabled = false; btn.textContent = '— ADD TO FIREBASE —';
+  }
+  function resetForm() {
+    ['f-name','f-price','f-desc','f-image','f-tgpost'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('f-category').value = 'clothing';
+    document.getElementById('char-count').textContent = '0 chars';
+    document.getElementById('img-preview').style.display = 'none';
+    document.getElementById('img-placeholder').style.display = 'flex';
+    setSold(false); updatePreview();
+  }
+
+  // TOAST
+  function showToast(msg, isError=false, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (isError ? ' error' : type === 'warn' ? ' warn' : '');
+    requestAnimationFrame(() => { t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000); });
+  }
+
+  // IMGBB UPLOAD
+  const IMGBB_KEY = '65b0dc79106f7090482a3ea8a2f532ac';
+
+  async function uploadToImgBB(file, fieldId, labelId, previewId, placeholderId, previewImgId) {
+    const label = document.getElementById(labelId);
+    label.classList.add('uploading');
+
+    // показываем оверлей
+    const overlay = document.getElementById('upload-overlay');
+    const filenameEl = document.getElementById('upload-overlay-filename');
+    filenameEl.textContent = file.name.length > 36 ? file.name.substring(0, 34) + '...' : file.name;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_KEY, { method:'POST', body:formData });
+      const data = await res.json();
+      if (data.success) {
+        const url = data.data.url;
+        document.getElementById(fieldId).value = url;
+        const img = document.getElementById(previewImgId);
+        const prev = document.getElementById(previewId);
+        const ph = document.getElementById(placeholderId);
+        img.src = url;
+        img.onload = () => { prev.style.display='block'; ph.style.display='none'; };
+        updatePreview();
+        showToast('UPLOADED ✓');
+      } else {
+        showToast('UPLOAD FAILED', true);
+      }
+    } catch(e) {
+      showToast('UPLOAD ERROR', true);
+    }
+
+    // скрываем оверлей
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    label.classList.remove('uploading');
+  }
+
+  document.getElementById('f-file-input').addEventListener('change', function() {
+    if (this.files[0]) uploadToImgBB(this.files[0], 'f-image', 'f-upload-label', 'img-preview', 'img-placeholder', 'img-preview-img');
+  });
+  document.getElementById('e-file-input').addEventListener('change', function() {
+    if (this.files[0]) uploadToImgBB(this.files[0], 'e-image', 'e-upload-label', 'e-img-preview', 'e-img-placeholder', 'e-img-preview-img');
+  });
+
+  // EXPOSE
+  window.doLogin = doLogin; window.doLogout = doLogout;
+  window.switchTab = switchTab; window.loadProductList = loadProductList;
+  window.submitProduct = submitProduct; window.resetForm = resetForm; window.setSold = setSold;
+  window.openEditModal = openEditModal; window.closeEditModal = closeEditModal;
+  window.setEditSold = setEditSold; window.saveEdit = saveEdit;
+  window.askDelete = askDelete; window.closeConfirm = closeConfirm; window.confirmDelete = confirmDelete;
+  window.saveOrder = saveOrder;
+
+  updatePreview();
+</script>
+</body>
+</html>

@@ -13,7 +13,8 @@
 <div class="side left"></div>
 <div class="side right"></div>
 
-<header class="header"></header>
+<header class="header">
+</header>
 
 <div class="after-header-text">
     <h3>FIRST DROP</h3>
@@ -60,7 +61,6 @@
         <div class="modal-body">
             <div class="modal-image-container">
                 <img id="modal-image" src="" alt="">
-                <div class="modal-views" id="modal-views"></div>
             </div>
             <div class="modal-info">
                 <h2 id="modal-name"></h2>
@@ -74,6 +74,25 @@
     </div>
 </div>
 
-<script src="script.js"></script>
+
+<script type="module" src="main.js">
+
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+l
+const firebaseConfig = {
+  apiKey: "AIzaSyDMjvCNkx5-2nl5Ybjp49cv2P8YAkOyzsk",
+  authDomain: "rawstore111.firebaseapp.com",
+  projectId: "rawstore111",
+  storageBucket: "rawstore111.firebasestorage.app",
+  messagingSenderId: "249110623807",
+  appId: "1:249110623807:web:74a827237f3b5efb78ea8a",
+  measurementId: "G-RJKZX37KYM"
+};
+
+console.log("Firebase connected");
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+</script>
 </body>
 </html>
