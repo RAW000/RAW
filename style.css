@@ -477,13 +477,7 @@ footer .html1-link {
   ::-webkit-scrollbar { width: 0; height: 0; }
 }
 /* when modal open: stop background scroll/bounce */
-body.modal-open {
-  position: fixed;
-  top: var(--scroll-y);
-  left: 0;
-  right: 0;
-  overflow-y: scroll; /* сохраняем ширину скроллбара */
-}
+body.modal-open { overflow: hidden; }
 
 /* modal should scroll, but not move background */
 .modal-content {

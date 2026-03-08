@@ -68,20 +68,19 @@ loadProducts();
 let scrollPos = 0;
 
 function lockBodyScroll() {
-  scrollPos = window.scrollY || window.pageYOffset;
-  document.documentElement.style.setProperty('--scroll-y', '-' + scrollPos + 'px');
-  document.body.classList.add('modal-open');
+  // ничего не делаем с body — блокируем только через touchmove на оверлее
 }
 
 function unlockBodyScroll() {
-  document.body.classList.remove('modal-open');
-  window.scrollTo(0, scrollPos);
+  // ничего
 }
 
 function preventTouchMove(e) {
+  // разрешаем скролл только внутри .modal-content
   const modalContent = document.querySelector('.modal-content');
-  if (!modalContent) return;
-  if (!modalContent.contains(e.target)) e.preventDefault();
+  if (!modalContent) { e.preventDefault(); return; }
+  if (modalContent.contains(e.target)) return; // внутри модалки — ок
+  e.preventDefault(); // снаружи — блокируем
 }
 
 function enableTouchLock() {
