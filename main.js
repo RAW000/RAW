@@ -103,7 +103,7 @@ function renderProducts(items) {
 
     card.innerHTML =
       '<div style="position:relative">' +
-        '<img class="img" src="' + item.image + '" alt="' + item.name + '">' +
+        '<img class="img" src="' + item.image + '" alt="' + item.name + '" loading="lazy">' +
         soldBadge +
       '</div>' +
       '<h2>' + item.name + '</h2>' +
