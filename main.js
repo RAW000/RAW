@@ -68,19 +68,29 @@ loadProducts();
 let scrollPos = 0;
 
 function lockBodyScroll() {
-  // ничего не делаем с body — блокируем только через touchmove на оверлее
+  scrollPos = window.scrollY || window.pageYOffset;
+  document.body.classList.add('modal-open');
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-' + scrollPos + 'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
 }
 
 function unlockBodyScroll() {
-  // ничего
+  document.body.classList.remove('modal-open');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  window.scrollTo(0, scrollPos);
 }
 
 function preventTouchMove(e) {
-  // разрешаем скролл только внутри .modal-content
   const modalContent = document.querySelector('.modal-content');
-  if (!modalContent) { e.preventDefault(); return; }
-  if (modalContent.contains(e.target)) return; // внутри модалки — ок
-  e.preventDefault(); // снаружи — блокируем
+  if (!modalContent) return;
+  if (!modalContent.contains(e.target)) e.preventDefault();
 }
 
 function enableTouchLock() {
