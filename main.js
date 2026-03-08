@@ -70,20 +70,10 @@ let scrollPos = 0;
 function lockBodyScroll() {
   scrollPos = window.scrollY || window.pageYOffset;
   document.body.classList.add('modal-open');
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollPos}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.width = '100%';
 }
 
 function unlockBodyScroll() {
   document.body.classList.remove('modal-open');
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.width = '';
   window.scrollTo(0, scrollPos);
 }
 
@@ -126,29 +116,29 @@ function renderProducts(items) {
       '<p class="price-line">' + priceLine + '</p>' +
       '<p class="desc-line">' + otherLines + '</p>';
 
-    // на мобильных различаем тап и скролл
-    let touchStartY = 0;
-    let touchStartX = 0;
+    let _tStartY = 0, _tStartX = 0, _tMoved = false;
+
     card.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-      touchStartX = e.touches[0].clientX;
+      _tStartY = e.touches[0].clientY;
+      _tStartX = e.touches[0].clientX;
+      _tMoved = false;
     }, { passive: true });
+
+    card.addEventListener('touchmove', () => {
+      _tMoved = true;
+    }, { passive: true });
+
+    card.addEventListener('touchend', (e) => {
+      if (_tMoved) return; // был скролл — игнорируем
+      e.preventDefault(); // блокируем синтетический click от iOS
+      openModal(item);
+    }, { passive: false });
+
+    // для десктопа
     card.addEventListener('click', (e) => {
-      // если это был touchend после скролла — игнорируем
-      if (e.sourceCapabilities && !e.sourceCapabilities.firesTouchEvents) {
-        openModal(item);
-        return;
-      }
+      if (e.pointerType === 'touch') return; // уже обработано touchend
       openModal(item);
     });
-    card.addEventListener('touchend', (e) => {
-      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-      const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-      // если палец сдвинулся больше 8px — это скролл, не тап
-      if (dy > 8 || dx > 8) {
-        e.preventDefault();
-      }
-    }, { passive: false });
     grid.appendChild(card);
   });
 
