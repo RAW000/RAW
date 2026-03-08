@@ -31,6 +31,9 @@ const auth = getAuth(app);
 let allProducts = [];
 
 async function loadProducts() {
+  // показываем скелетоны сразу
+  showSkeletons(6);
+
   const querySnapshot = await getDocs(collection(db, "products"));
   let items = [];
 
@@ -38,12 +41,25 @@ async function loadProducts() {
     items.push({ _id: doc.id, ...doc.data() });
   });
 
-  // сортируем по полю order, товары без order идут в конец
   items.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
 
   allProducts = items;
   renderProducts(items);
   setupFilters();
+}
+
+function showSkeletons(count) {
+  const grid = document.getElementById('products');
+  grid.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    grid.innerHTML +=
+      '<div class="skeleton-card">' +
+        '<div class="skeleton-img"></div>' +
+        '<div class="skeleton-line"></div>' +
+        '<div class="skeleton-line short"></div>' +
+        '<div class="skeleton-line shorter"></div>' +
+      '</div>';
+  }
 }
 
 loadProducts();
@@ -110,7 +126,29 @@ function renderProducts(items) {
       '<p class="price-line">' + priceLine + '</p>' +
       '<p class="desc-line">' + otherLines + '</p>';
 
-    card.addEventListener('click', () => openModal(item));
+    // на мобильных различаем тап и скролл
+    let touchStartY = 0;
+    let touchStartX = 0;
+    card.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    card.addEventListener('click', (e) => {
+      // если это был touchend после скролла — игнорируем
+      if (e.sourceCapabilities && !e.sourceCapabilities.firesTouchEvents) {
+        openModal(item);
+        return;
+      }
+      openModal(item);
+    });
+    card.addEventListener('touchend', (e) => {
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+      const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+      // если палец сдвинулся больше 8px — это скролл, не тап
+      if (dy > 8 || dx > 8) {
+        e.preventDefault();
+      }
+    }, { passive: false });
     grid.appendChild(card);
   });
 
@@ -119,13 +157,10 @@ function renderProducts(items) {
 
 function observeCards() {
   const cards = document.querySelectorAll('.card');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('show');
-    });
-  }, { threshold: 0.2 });
-
-  cards.forEach(c => observer.observe(c));
+  // небольшой stagger — карточки появляются одна за другой быстро
+  cards.forEach((c, i) => {
+    setTimeout(() => c.classList.add('show'), i * 60);
+  });
 }
 
 // ====== FILTERS ======

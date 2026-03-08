@@ -1,11 +1,74 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDMjvCNkx5-2nl5Ybjp49cv2P8YAkOyzsk",
+  authDomain: "rawstore111.firebaseapp.com",
+  projectId: "rawstore111",
+  storageBucket: "rawstore111.firebasestorage.app",
+  messagingSenderId: "249110623807",
+  appId: "1:249110623807:web:74a827237f3b5efb78ea8a",
+  measurementId: "G-RJKZX37KYM"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// ====== PRODUCTS ======
 let allProducts = [];
 
-// ====== SCROLL LOCK (NO BACKGROUND SCROLL) ======
+async function loadProducts() {
+  // показываем скелетоны сразу
+  showSkeletons(6);
+
+  const querySnapshot = await getDocs(collection(db, "products"));
+  let items = [];
+
+  querySnapshot.forEach(doc => {
+    items.push({ _id: doc.id, ...doc.data() });
+  });
+
+  items.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
+
+  allProducts = items;
+  renderProducts(items);
+  setupFilters();
+}
+
+function showSkeletons(count) {
+  const grid = document.getElementById('products');
+  grid.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    grid.innerHTML +=
+      '<div class="skeleton-card">' +
+        '<div class="skeleton-img"></div>' +
+        '<div class="skeleton-line"></div>' +
+        '<div class="skeleton-line short"></div>' +
+        '<div class="skeleton-line shorter"></div>' +
+      '</div>';
+  }
+}
+
+loadProducts();
+
+// ====== SCROLL LOCK ======
 let scrollPos = 0;
 
 function lockBodyScroll() {
   scrollPos = window.scrollY || window.pageYOffset;
-
   document.body.classList.add('modal-open');
   document.body.style.position = 'fixed';
   document.body.style.top = `-${scrollPos}px`;
@@ -21,19 +84,13 @@ function unlockBodyScroll() {
   document.body.style.left = '';
   document.body.style.right = '';
   document.body.style.width = '';
-
   window.scrollTo(0, scrollPos);
 }
 
-// iOS/webview: чтобы при свайпе внутри модалки не двигался фон
 function preventTouchMove(e) {
   const modalContent = document.querySelector('.modal-content');
   if (!modalContent) return;
-
-  // разрешаем скролл только внутри .modal-content
-  if (!modalContent.contains(e.target)) {
-    e.preventDefault();
-  }
+  if (!modalContent.contains(e.target)) e.preventDefault();
 }
 
 function enableTouchLock() {
@@ -43,16 +100,7 @@ function disableTouchLock() {
   document.removeEventListener('touchmove', preventTouchMove, { passive: false });
 }
 
-// ====== LOAD PRODUCTS ======
-fetch('products.json')
-  .then(res => res.json())
-  .then(items => {
-    allProducts = items;
-    renderProducts(items);
-    setupFilters();
-  })
-  .catch(err => console.error(err));
-
+// ====== RENDER ======
 function renderProducts(items) {
   const grid = document.getElementById('products');
   grid.innerHTML = '';
@@ -62,26 +110,21 @@ function renderProducts(items) {
     card.className = 'card';
 
     const soldBadge = item.sold
-      ? `<div class="sold-badge">SOLD OUT</div>`
+      ? '<div class="sold-badge">SOLD OUT</div>'
       : '';
 
-    const viewsBadge = `<div class="views-badge">${item.views} views</div>`;
-
-    // Parse description to highlight price
     const descLines = (item.desc || '').split('\n');
     const priceLine = descLines[0] || '';
     const otherLines = descLines.slice(1).join('\n');
 
-    card.innerHTML = `
-      <div style="position:relative">
-        <img class="img" src="${item.image}" alt="${item.name}">
-        ${soldBadge}
-        ${viewsBadge}
-      </div>
-      <h2>${item.name}</h2>
-      <p class="price-line">${priceLine}</p>
-      <p class="desc-line">${otherLines}</p>
-    `;
+    card.innerHTML =
+      '<div style="position:relative">' +
+        '<img class="img" src="' + item.image + '" alt="' + item.name + '" loading="lazy">' +
+        soldBadge +
+      '</div>' +
+      '<h2>' + item.name + '</h2>' +
+      '<p class="price-line">' + priceLine + '</p>' +
+      '<p class="desc-line">' + otherLines + '</p>';
 
     card.addEventListener('click', () => openModal(item));
     grid.appendChild(card);
@@ -96,7 +139,7 @@ function observeCards() {
     entries.forEach(e => {
       if (e.isIntersecting) e.target.classList.add('show');
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.05, rootMargin: '0px 0px 60px 0px' });
 
   cards.forEach(c => observer.observe(c));
 }
@@ -104,12 +147,14 @@ function observeCards() {
 // ====== FILTERS ======
 function setupFilters() {
   document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn')
-        .forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
 
-      const f = btn.dataset.filter;
+    newBtn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      newBtn.classList.add('active');
+
+      const f = newBtn.dataset.filter;
       let list = [...allProducts];
 
       if (f === 'clothing') list = list.filter(p => p.category === 'clothing');
@@ -129,7 +174,6 @@ function openModal(item) {
   document.getElementById('modal-image').src = item.image;
   document.getElementById('modal-name').textContent = item.name;
   document.getElementById('modal-desc').textContent = item.desc || '';
-  document.getElementById('modal-views').textContent = `${item.views} views`;
 
   const link = document.getElementById('modal-tg-link');
   link.href = item.tgPost || 'https://t.me/RAWSTORE111';
@@ -143,8 +187,6 @@ function openModal(item) {
   }
 
   modal.classList.add('active');
-
-  // 🔥 важно: сначала лочим фон
   lockBodyScroll();
   enableTouchLock();
 }
@@ -152,14 +194,33 @@ function openModal(item) {
 function closeModal() {
   const modal = document.getElementById('modal');
   modal.classList.remove('active');
-
   disableTouchLock();
   unlockBodyScroll();
 }
 
+// ====== AUTH ======
+document.getElementById("login-btn")?.addEventListener("click", async () => {
+  const email = document.getElementById("login-email").value;
+  const pass = document.getElementById("login-pass").value;
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (e) {
+    alert("Неверный логин или пароль");
+  }
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById("login-box").style.display = "none";
+    document.getElementById("admin-panel").style.display = "block";
+  } else {
+    document.getElementById("admin-panel").style.display = "none";
+  }
+});
+
+// ====== EVENTS ======
 document.querySelector('.modal-close')?.addEventListener('click', closeModal);
 document.querySelector('.modal-overlay')?.addEventListener('click', closeModal);
-
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });

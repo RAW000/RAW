@@ -111,8 +111,8 @@ body {
   border: 1px solid rgba(255,255,255,0.35);
   padding: 16px;
   opacity: 0;
-  transform: translateY(30px);
-  transition: 0.8s;
+  transform: translateY(16px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
   cursor: pointer;
   position: relative;
 }
@@ -495,4 +495,31 @@ body.modal-open {
   .filter-btn:hover { background: transparent; }
 }
 
+}
+
+/* SKELETON LOADER */
+.skeleton-card {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 16px;
+}
+.skeleton-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 12px;
+}
+.skeleton-line {
+  height: 14px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 8px;
+}
+.skeleton-line.short { width: 55%; }
+.skeleton-line.shorter { width: 35%; margin-bottom: 0; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
