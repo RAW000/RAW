@@ -69,6 +69,7 @@ let scrollPos = 0;
 
 function lockBodyScroll() {
   scrollPos = window.scrollY || window.pageYOffset;
+  document.documentElement.style.setProperty('--scroll-y', '-' + scrollPos + 'px');
   document.body.classList.add('modal-open');
 }
 

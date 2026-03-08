@@ -69,21 +69,12 @@ let scrollPos = 0;
 
 function lockBodyScroll() {
   scrollPos = window.scrollY || window.pageYOffset;
+  document.documentElement.style.setProperty('--scroll-y', '-' + scrollPos + 'px');
   document.body.classList.add('modal-open');
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollPos}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.width = '100%';
 }
 
 function unlockBodyScroll() {
   document.body.classList.remove('modal-open');
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.width = '';
   window.scrollTo(0, scrollPos);
 }
 
@@ -126,7 +117,29 @@ function renderProducts(items) {
       '<p class="price-line">' + priceLine + '</p>' +
       '<p class="desc-line">' + otherLines + '</p>';
 
-    card.addEventListener('click', () => openModal(item));
+    let _tStartY = 0, _tStartX = 0, _tMoved = false;
+
+    card.addEventListener('touchstart', (e) => {
+      _tStartY = e.touches[0].clientY;
+      _tStartX = e.touches[0].clientX;
+      _tMoved = false;
+    }, { passive: true });
+
+    card.addEventListener('touchmove', () => {
+      _tMoved = true;
+    }, { passive: true });
+
+    card.addEventListener('touchend', (e) => {
+      if (_tMoved) return; // был скролл — игнорируем
+      e.preventDefault(); // блокируем синтетический click от iOS
+      openModal(item);
+    }, { passive: false });
+
+    // для десктопа
+    card.addEventListener('click', (e) => {
+      if (e.pointerType === 'touch') return; // уже обработано touchend
+      openModal(item);
+    });
     grid.appendChild(card);
   });
 
@@ -135,13 +148,10 @@ function renderProducts(items) {
 
 function observeCards() {
   const cards = document.querySelectorAll('.card');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('show');
-    });
-  }, { threshold: 0.05, rootMargin: '0px 0px 60px 0px' });
-
-  cards.forEach(c => observer.observe(c));
+  // небольшой stagger — карточки появляются одна за другой быстро
+  cards.forEach((c, i) => {
+    setTimeout(() => c.classList.add('show'), i * 60);
+  });
 }
 
 // ====== FILTERS ======
