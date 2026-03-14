@@ -523,3 +523,22 @@ body.modal-open {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+
+/* ===== DROP BANNER ===== */
+.drop-banner {
+  grid-column: 1 / -1;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding: 22px 0;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.drop-banner span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}

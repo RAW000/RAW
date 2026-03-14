@@ -217,6 +217,7 @@
       <button class="tab-btn active" data-tab="add" onclick="switchTab('add',this)">+ ADD</button>
       <button class="tab-btn" data-tab="list" onclick="switchTab('list',this)">PRODUCTS <span id="tab-count" style="opacity:0.4"></span></button>
       <button class="tab-btn" data-tab="order" onclick="switchTab('order',this)">⇅ ORDER</button>
+      <button class="tab-btn" data-tab="banner" onclick="switchTab('banner',this)">★ BANNER</button>
     </div>
     <button class="btn-logout" onclick="doLogout()">LOGOUT</button>
   </div>
@@ -315,7 +316,42 @@
   </div>
 </div>
 
-<!-- EDIT MODAL -->
+
+    <!-- BANNER TAB -->
+  <div class="tab-content" id="tab-banner">
+    <div class="panel-header">
+      <div class="label">RAW STORE — BACKEND</div>
+      <h1>DROP <span>BANNER</span></h1>
+    </div>
+    <div style="margin-bottom:24px;font-size:11px;color:var(--muted);line-height:1.7;">
+      Разделитель между карточками. Напиши текст, выбери после какого товара вставить.
+    </div>
+    <div class="fields">
+      <div class="field">
+        <div class="field-label">СТАТУС</div>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="banner-btn-off" onclick="setBannerActive(false)">OFF</button>
+          <button class="toggle-btn" id="banner-btn-on" onclick="setBannerActive(true)">ON</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">ТЕКСТ</div>
+        <input type="text" id="banner-text" placeholder="— SECOND DROP —" maxlength="80">
+      </div>
+      <div class="field">
+        <div class="field-label">ПОЗИЦИЯ<br><span style="font-size:9px;display:block;margin-top:3px;">после какого товара</span></div>
+        <input type="number" id="banner-position" placeholder="2" min="1" value="2">
+      </div>
+    </div>
+    <div style="margin-top:20px;padding:20px;border-top:1px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.15);text-align:center;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.4);" id="banner-preview-text">— SECOND DROP —</span>
+    </div>
+    <div class="actions" style="margin-top:24px;">
+      <button class="btn-submit" onclick="saveBanner()">— SAVE BANNER —</button>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
 <div class="edit-overlay" id="edit-overlay">
   <div class="edit-modal">
     <div class="edit-modal-header">
@@ -486,6 +522,7 @@
     btn.classList.add('active');
     if (name === 'list') loadProductList();
     if (name === 'order') loadOrderList();
+    if (name === 'banner') loadBannerSettings();
   }
 
   // FETCH
@@ -824,14 +861,51 @@
     if (this.files[0]) uploadToImgBB(this.files[0], 'e-image', 'e-upload-label', 'e-img-preview', 'e-img-placeholder', 'e-img-preview-img');
   });
 
-  // EXPOSE
-  window.doLogin = doLogin; window.doLogout = doLogout;
-  window.switchTab = switchTab; window.loadProductList = loadProductList;
-  window.submitProduct = submitProduct; window.resetForm = resetForm; window.setSold = setSold;
-  window.openEditModal = openEditModal; window.closeEditModal = closeEditModal;
-  window.setEditSold = setEditSold; window.saveEdit = saveEdit;
-  window.askDelete = askDelete; window.closeConfirm = closeConfirm; window.confirmDelete = confirmDelete;
-  window.saveOrder = saveOrder;
+
+    // BANNER
+  let bannerActive = false;
+
+  async function loadBannerSettings() {
+    try {
+      const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const snap = await getDoc(doc(window._db, "settings", "banner"));
+      if (snap.exists()) {
+        const data = snap.data();
+        bannerActive = !!data.active;
+        document.getElementById('banner-text').value = data.text || '';
+        document.getElementById('banner-position').value = data.position ?? 2;
+        document.getElementById('banner-preview-text').textContent = data.text || '— SECOND DROP —';
+        setBannerActive(bannerActive);
+      }
+    } catch(e) {}
+  }
+
+  function setBannerActive(val) {
+    bannerActive = val;
+    document.getElementById('banner-btn-on').classList.toggle('active', val);
+    document.getElementById('banner-btn-off').classList.toggle('active', !val);
+  }
+
+  document.getElementById('banner-text')?.addEventListener('input', function() {
+    document.getElementById('banner-preview-text').textContent = this.value || '— SECOND DROP —';
+  });
+
+  async function saveBanner() {
+    const text = document.getElementById('banner-text').value.trim();
+    const position = parseInt(document.getElementById('banner-position').value) || 2;
+    try {
+      const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      await setDoc(doc(window._db, "settings", "banner"), {
+        active: bannerActive,
+        text,
+        position
+      });
+      showToast('BANNER SAVED ✓');
+    } catch(e) {
+      showToast('ERROR: ' + e.message, true);
+    }
+  }
+
 
   updatePreview();
 </script>

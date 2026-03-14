@@ -10,10 +10,20 @@
 </head>
 <body>
 
+
 <div class="side left"></div>
 <div class="side right"></div>
 
 <header class="header">
+  <div id="login-box" style="text-align:center; padding-top:40px;">
+  <input id="login-email" placeholder="Email">
+  <input id="login-pass" type="password" placeholder="Password">
+  <button id="login-btn">LOGIN</button>
+</div>
+
+<div id="admin-panel" style="display:none;">
+  <!-- твоя панель добавления -->
+</div>
 </header>
 
 <div class="after-header-text">
@@ -47,8 +57,6 @@
     <!-- Правая колонка -->
     <a href="https://t.me/RAWREVIWES" class="reviews-link"
      target="_blank">CHECK REVIEWS</a>
-    <a href="index1.html" class="html1-link" 
-    target="_blank">PROCESS/DETAILS</a>
   </div>
 </footer>
 </main>
@@ -61,6 +69,7 @@
         <div class="modal-body">
             <div class="modal-image-container">
                 <img id="modal-image" src="" alt="">
+                <div class="modal-views" id="modal-views"></div>
             </div>
             <div class="modal-info">
                 <h2 id="modal-name"></h2>

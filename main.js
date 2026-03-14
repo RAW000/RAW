@@ -33,6 +33,7 @@ let allProducts = [];
 async function loadProducts() {
   // показываем скелетоны сразу
   showSkeletons(6);
+  await loadBanner(); // грузим баннер параллельно
 
   const querySnapshot = await getDocs(collection(db, "products"));
   let items = [];
@@ -59,6 +60,45 @@ function showSkeletons(count) {
         '<div class="skeleton-line short"></div>' +
         '<div class="skeleton-line shorter"></div>' +
       '</div>';
+  }
+}
+
+
+// ====== BANNER ======
+async function loadBanner() {
+  try {
+    const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDoc(doc(db, "settings", "banner"));
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.active && data.text) {
+        const banner = document.getElementById('site-banner');
+        const t1 = document.getElementById('site-banner-text');
+        const t2 = document.getElementById('site-banner-text2');
+        const txt = data.text + '    —    ' + data.text + '    —    ';
+        t1.textContent = txt;
+        t2.textContent = txt;
+        banner.style.display = 'block';
+        document.body.classList.add('has-banner');
+      }
+    }
+  } catch(e) {}
+}
+
+loadBanner();
+
+// ====== BANNER ======
+async function loadBanner() {
+  try {
+    const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDoc(doc(db, "settings", "banner"));
+    if (snap.exists()) {
+      window._bannerData = snap.data();
+    } else {
+      window._bannerData = { active: false, text: '', position: 0 };
+    }
+  } catch(e) {
+    window._bannerData = { active: false };
   }
 }
 
@@ -105,7 +145,17 @@ function renderProducts(items) {
   const grid = document.getElementById('products');
   grid.innerHTML = '';
 
-  items.forEach((item) => {
+  items.forEach((item, index) => {
+    // вставляем баннер перед нужным товаром
+    if (window._bannerData && window._bannerData.active && window._bannerData.text) {
+      const pos = window._bannerData.position ?? 0;
+      if (pos > 0 && index === pos) {
+        const banner = document.createElement('div');
+        banner.className = 'drop-banner';
+        banner.innerHTML = '<span>' + window._bannerData.text + '</span>';
+        grid.appendChild(banner);
+      }
+    }
     const card = document.createElement('div');
     card.className = 'card';
 
