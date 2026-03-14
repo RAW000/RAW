@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RAW</title>
@@ -10,98 +10,64 @@
 </head>
 <body>
 
-
 <div class="side left"></div>
 <div class="side right"></div>
 
-<header class="header">
-  <div id="login-box" style="text-align:center; padding-top:40px;">
-  <input id="login-email" placeholder="Email">
-  <input id="login-pass" type="password" placeholder="Password">
-  <button id="login-btn">LOGIN</button>
-</div>
-
-<div id="admin-panel" style="display:none;">
-  <!-- твоя панель добавления -->
-</div>
-</header>
+<header class="header"></header>
 
 <div class="after-header-text">
-    <h3>FIRST DROP</h3>
-    <p>Click on the product card to purchase</p>
+  <h3>FIRST DROP</h3>
+  <p>Click on the product card to purchase</p>
 </div>
 
-<!-- FILTERS -->
 <div class="filters">
-    <button class="filter-btn active" data-filter="all">ALL</button>
-    <button class="filter-btn" data-filter="clothing">CLOTHING</button>
-    <button class="filter-btn" data-filter="accessories">ACCESSORIES</button>
-    <button class="filter-btn" data-filter="price-low">PRICE: LOW</button>
-    <button class="filter-btn" data-filter="price-high">PRICE: HIGH</button>
+  <button class="filter-btn active" data-filter="all">ALL</button>
+  <button class="filter-btn" data-filter="clothing">CLOTHING</button>
+  <button class="filter-btn" data-filter="accessories">ACCESSORIES</button>
+  <button class="filter-btn" data-filter="price-low">PRICE: LOW</button>
+  <button class="filter-btn" data-filter="price-high">PRICE: HIGH</button>
 </div>
 
 <main class="content">
   <section class="grid" id="products"></section>
-  
+
   <div class="bottom-text">
     <p>FOR THE REAL PHOTO CHECK MY TGC</p>
   </div>
-<footer>
-  <div>
-    <!-- Левая колонка -->
-    <a href="https://t.me/RAWSTORE111" target="_blank">tgc:RAWSTORE111</a>
-    <a href="https://t.me/rawceo111" target="_blank">tg:RAWCEO111</a>
-    <a href="https://www.instagram.com/raw_store111/" target="_blank">inst:RAW_STORE111</a>
-  </div>
-  <div>
-    <!-- Правая колонка -->
-    <a href="https://t.me/RAWREVIWES" class="reviews-link"
-     target="_blank">CHECK REVIEWS</a>
-  </div>
-</footer>
+
+  <footer>
+    <div>
+      <a href="https://t.me/RAWSTORE111" target="_blank">tgc:RAWSTORE111</a>
+      <a href="https://t.me/rawceo111" target="_blank">tg:RAWCEO111</a>
+      <a href="https://www.instagram.com/raw_store111/" target="_blank">inst:RAW_STORE111</a>
+    </div>
+    <div>
+      <a href="https://t.me/RAWREVIWES" class="reviews-link" target="_blank">CHECK REVIEWS</a>
+    </div>
+  </footer>
 </main>
 
-<!-- MODAL WINDOW -->
+<!-- MODAL -->
 <div class="modal" id="modal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-        <button class="modal-close">&times;</button>
-        <div class="modal-body">
-            <div class="modal-image-container">
-                <img id="modal-image" src="" alt="">
-                <div class="modal-views" id="modal-views"></div>
-            </div>
-            <div class="modal-info">
-                <h2 id="modal-name"></h2>
-                <p id="modal-desc"></p>
-                <a id="modal-tg-link" href="" target="_blank" class="modal-tg-btn">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="TG">
-                    VIEW IN TELEGRAM
-                </a>
-            </div>
-        </div>
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <button class="modal-close">&times;</button>
+    <div class="modal-body">
+      <div class="modal-image-container">
+        <img id="modal-image" src="" alt="">
+      </div>
+      <div class="modal-info">
+        <h2 id="modal-name"></h2>
+        <p id="modal-desc"></p>
+        <a id="modal-tg-link" href="" target="_blank" class="modal-tg-btn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="TG">
+          VIEW IN TELEGRAM
+        </a>
+      </div>
     </div>
+  </div>
 </div>
 
-
-<script type="module" src="main.js">
-
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-l
-const firebaseConfig = {
-  apiKey: "AIzaSyDMjvCNkx5-2nl5Ybjp49cv2P8YAkOyzsk",
-  authDomain: "rawstore111.firebaseapp.com",
-  projectId: "rawstore111",
-  storageBucket: "rawstore111.firebasestorage.app",
-  messagingSenderId: "249110623807",
-  appId: "1:249110623807:web:74a827237f3b5efb78ea8a",
-  measurementId: "G-RJKZX37KYM"
-};
-
-console.log("Firebase connected");
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-</script>
+<script type="module" src="main.js"></script>
 </body>
 </html>

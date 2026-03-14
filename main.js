@@ -1,17 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDMjvCNkx5-2nl5Ybjp49cv2P8YAkOyzsk",
@@ -25,24 +14,29 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
+
+
+let allProducts = [];
+window._bannerData = { active: false };
+
+// ====== BANNER ======
+async function loadBanner() {
+  try {
+    const snap = await getDoc(doc(db, "settings", "banner"));
+    if (snap.exists()) {
+      window._bannerData = snap.data();
+    }
+  } catch(e) {}
+}
 
 // ====== PRODUCTS ======
-let allProducts = [];
-
 async function loadProducts() {
   showSkeletons(6);
-
-  // баннер грузим параллельно с товарами — не блокирует
   loadBanner().catch(() => {});
 
   const querySnapshot = await getDocs(collection(db, "products"));
   let items = [];
-
-  querySnapshot.forEach(doc => {
-    items.push({ _id: doc.id, ...doc.data() });
-  });
-
+  querySnapshot.forEach(d => items.push({ _id: d.id, ...d.data() }));
   items.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
 
   allProducts = items;
@@ -61,22 +55,6 @@ function showSkeletons(count) {
         '<div class="skeleton-line short"></div>' +
         '<div class="skeleton-line shorter"></div>' +
       '</div>';
-  }
-}
-
-
-// ====== BANNER ======
-async function loadBanner() {
-  try {
-    const { getDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const snap = await getDoc(fsDoc(db, "settings", "banner"));
-    if (snap.exists()) {
-      window._bannerData = snap.data();
-    } else {
-      window._bannerData = { active: false, text: '', position: 0 };
-    }
-  } catch(e) {
-    window._bannerData = { active: false };
   }
 }
 
@@ -124,7 +102,7 @@ function renderProducts(items) {
   grid.innerHTML = '';
 
   items.forEach((item, index) => {
-    // вставляем баннер перед нужным товаром
+    // баннер-разделитель
     if (window._bannerData && window._bannerData.active && window._bannerData.text) {
       const pos = window._bannerData.position ?? 0;
       if (pos > 0 && index === pos) {
@@ -134,13 +112,11 @@ function renderProducts(items) {
         grid.appendChild(banner);
       }
     }
+
     const card = document.createElement('div');
     card.className = 'card';
 
-    const soldBadge = item.sold
-      ? '<div class="sold-badge">SOLD OUT</div>'
-      : '';
-
+    const soldBadge = item.sold ? '<div class="sold-badge">SOLD OUT</div>' : '';
     const descLines = (item.desc || '').split('\n');
     const priceLine = descLines[0] || '';
     const otherLines = descLines.slice(1).join('\n');
@@ -154,29 +130,19 @@ function renderProducts(items) {
       '<p class="price-line">' + priceLine + '</p>' +
       '<p class="desc-line">' + otherLines + '</p>';
 
-    let _tStartY = 0, _tStartX = 0, _tMoved = false;
-
-    card.addEventListener('touchstart', (e) => {
-      _tStartY = e.touches[0].clientY;
-      _tStartX = e.touches[0].clientX;
-      _tMoved = false;
-    }, { passive: true });
-
-    card.addEventListener('touchmove', () => {
-      _tMoved = true;
-    }, { passive: true });
-
+    let _tMoved = false;
+    card.addEventListener('touchstart', () => { _tMoved = false; }, { passive: true });
+    card.addEventListener('touchmove', () => { _tMoved = true; }, { passive: true });
     card.addEventListener('touchend', (e) => {
-      if (_tMoved) return; // был скролл — игнорируем
-      e.preventDefault(); // блокируем синтетический click от iOS
+      if (_tMoved) return;
+      e.preventDefault();
       openModal(item);
     }, { passive: false });
-
-    // для десктопа
     card.addEventListener('click', (e) => {
-      if (e.pointerType === 'touch') return; // уже обработано touchend
+      if (e.pointerType === 'touch') return;
       openModal(item);
     });
+
     grid.appendChild(card);
   });
 
@@ -185,10 +151,7 @@ function renderProducts(items) {
 
 function observeCards() {
   const cards = document.querySelectorAll('.card');
-  // небольшой stagger — карточки появляются одна за другой быстро
-  cards.forEach((c, i) => {
-    setTimeout(() => c.classList.add('show'), i * 60);
-  });
+  cards.forEach((c, i) => setTimeout(() => c.classList.add('show'), i * 60));
 }
 
 // ====== FILTERS ======
@@ -196,19 +159,15 @@ function setupFilters() {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     const newBtn = btn.cloneNode(true);
     btn.parentNode.replaceChild(newBtn, btn);
-
     newBtn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       newBtn.classList.add('active');
-
       const f = newBtn.dataset.filter;
       let list = [...allProducts];
-
       if (f === 'clothing') list = list.filter(p => p.category === 'clothing');
       if (f === 'accessories') list = list.filter(p => p.category === 'accessories');
       if (f === 'price-low') list.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
       if (f === 'price-high') list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-
       renderProducts(list);
     });
   });
@@ -217,14 +176,11 @@ function setupFilters() {
 // ====== MODAL ======
 function openModal(item) {
   const modal = document.getElementById('modal');
-
   document.getElementById('modal-image').src = item.image;
   document.getElementById('modal-name').textContent = item.name;
   document.getElementById('modal-desc').textContent = item.desc || '';
-
   const link = document.getElementById('modal-tg-link');
   link.href = item.tgPost || 'https://t.me/RAWSTORE111';
-
   if (item.sold) {
     link.innerHTML = 'SOLD OUT';
     link.classList.add('sold-out');
@@ -232,42 +188,20 @@ function openModal(item) {
     link.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="TG">VIEW IN TELEGRAM';
     link.classList.remove('sold-out');
   }
-
   modal.classList.add('active');
   lockBodyScroll();
   enableTouchLock();
 }
 
 function closeModal() {
-  const modal = document.getElementById('modal');
-  modal.classList.remove('active');
+  document.getElementById('modal').classList.remove('active');
   disableTouchLock();
   unlockBodyScroll();
 }
 
-// ====== AUTH ======
-document.getElementById("login-btn")?.addEventListener("click", async () => {
-  const email = document.getElementById("login-email").value;
-  const pass = document.getElementById("login-pass").value;
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (e) {
-    alert("Неверный логин или пароль");
-  }
-});
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    document.getElementById("login-box").style.display = "none";
-    document.getElementById("admin-panel").style.display = "block";
-  } else {
-    document.getElementById("admin-panel").style.display = "none";
-  }
-});
 
 // ====== EVENTS ======
 document.querySelector('.modal-close')?.addEventListener('click', closeModal);
 document.querySelector('.modal-overlay')?.addEventListener('click', closeModal);
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
