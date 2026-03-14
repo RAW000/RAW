@@ -31,9 +31,10 @@ const auth = getAuth(app);
 let allProducts = [];
 
 async function loadProducts() {
-  // показываем скелетоны сразу
   showSkeletons(6);
-  await loadBanner(); // грузим баннер параллельно
+
+  // баннер грузим параллельно с товарами — не блокирует
+  loadBanner().catch(() => {});
 
   const querySnapshot = await getDocs(collection(db, "products"));
   let items = [];
@@ -67,31 +68,8 @@ function showSkeletons(count) {
 // ====== BANNER ======
 async function loadBanner() {
   try {
-    const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const snap = await getDoc(doc(db, "settings", "banner"));
-    if (snap.exists()) {
-      const data = snap.data();
-      if (data.active && data.text) {
-        const banner = document.getElementById('site-banner');
-        const t1 = document.getElementById('site-banner-text');
-        const t2 = document.getElementById('site-banner-text2');
-        const txt = data.text + '    —    ' + data.text + '    —    ';
-        t1.textContent = txt;
-        t2.textContent = txt;
-        banner.style.display = 'block';
-        document.body.classList.add('has-banner');
-      }
-    }
-  } catch(e) {}
-}
-
-loadBanner();
-
-// ====== BANNER ======
-async function loadBanner() {
-  try {
-    const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const snap = await getDoc(doc(db, "settings", "banner"));
+    const { getDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDoc(fsDoc(db, "settings", "banner"));
     if (snap.exists()) {
       window._bannerData = snap.data();
     } else {
