@@ -166,6 +166,7 @@ function setupFilters() {
       let list = [...allProducts];
       if (f === 'clothing') list = list.filter(p => p.category === 'clothing');
       if (f === 'accessories') list = list.filter(p => p.category === 'accessories');
+      if (f === 'shoes') list = list.filter(p => p.category === 'shoes');
       if (f === 'price-low') list.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
       if (f === 'price-high') list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
       renderProducts(list);
